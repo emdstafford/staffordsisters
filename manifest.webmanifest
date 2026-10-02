@@ -1,0 +1,11 @@
+{
+  "name": "Stafford Sisters",
+  "short_name": "Sisters",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fff7fb",
+  "theme_color": "#f7b8d2",
+  "icons": [
+    {"src": "/stafford-sisters-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any maskable"}
+  ]
+}
