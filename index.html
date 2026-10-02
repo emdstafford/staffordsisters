@@ -19,14 +19,14 @@
 </div>
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-const supabase=createClient('https://pnawnvnselteqqgkqdva.supabase.co','sb_publishable_4y_vhUfDDIAR-nWw3ZO-zg_H0GmM3Mk');
+const supabase=createClient('https://pnawnvnselteqqgkqdva.supabase.co','sb_publishable_4y_vhUfDDIAR-nWw3ZO-zg_H0GmM3Mk',{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
 const signinScreen=document.getElementById('signin-screen'),privateApp=document.getElementById('private-app'),form=document.getElementById('signin-form'),status=document.getElementById('signin-status'),button=document.getElementById('signin-button');
 const usernameToEmail=u=>`${u.trim().toLowerCase().replace(/[^a-z0-9._-]/g,'')}@staffordsisters.family`;
 const pages=document.querySelectorAll('.page'),navButtons=document.querySelectorAll('.nav-btn');
 function showPage(name,scroll=true){pages.forEach(p=>p.classList.toggle('active',p.id===name));navButtons.forEach(b=>b.classList.toggle('active',b.dataset.page===name));if(scroll)window.scrollTo({top:0,left:0,behavior:'auto'});}
 function showSignedIn(){showPage('home',false);signinScreen.hidden=true;privateApp.hidden=false;requestAnimationFrame(()=>window.scrollTo({top:0,left:0,behavior:'auto'}));}
-function showSignedOut(){privateApp.hidden=true;signinScreen.hidden=false;window.scrollTo({top:0,left:0,behavior:'auto'});}
-const{data:{session}}=await supabase.auth.getSession();session?showSignedIn():showSignedOut();
+function showSignedOut(){privateApp.hidden=true;signinScreen.hidden=false;form.reset();window.scrollTo({top:0,left:0,behavior:'auto'});}
+showSignedOut();
 supabase.auth.onAuthStateChange((_event,session)=>session?showSignedIn():showSignedOut());
 form.addEventListener('submit',async e=>{e.preventDefault();status.hidden=true;button.disabled=true;button.textContent='Signing In…';const username=document.getElementById('username').value,password=document.getElementById('password').value;const{error}=await supabase.auth.signInWithPassword({email:usernameToEmail(username),password});if(error){status.textContent='That username or password did not work.';status.hidden=false;}button.disabled=false;button.textContent='Sign In';});
 document.getElementById('signout-button').addEventListener('click',()=>supabase.auth.signOut());
