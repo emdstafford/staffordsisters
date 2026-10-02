@@ -22,3 +22,18 @@
 .profile-links button>span{font-size:27px}.profile-links button div{flex:1}.profile-links strong{display:block}.profile-links small{display:block;color:var(--muted);font-size:12px;margin-top:3px}
 .private-photo-note{margin-top:16px;border-radius:18px;background:#f6f0fb;border:1px solid #e6dbf2;padding:14px;display:flex;gap:12px;align-items:flex-start}
 .private-photo-note>span{font-size:22px}.private-photo-note p{margin:4px 0 0;color:var(--muted);font-size:12px;line-height:1.4}
+
+.signin-screen{min-height:100dvh;display:grid;place-items:center;padding:28px 18px;background:linear-gradient(160deg,#fff5fa 0%,#f3ebff 55%,#fffaf4 100%)}
+.signin-card{width:min(420px,100%);background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:28px;padding:26px 22px;box-shadow:0 18px 50px rgba(75,48,73,.14);text-align:center}
+.signin-logo{width:92px;height:92px;border-radius:22px;display:block;margin:0 auto 14px;box-shadow:0 8px 22px rgba(75,48,73,.14)}
+.signin-card h1{font-size:30px;margin:5px 0 8px}
+.signin-copy{color:var(--muted);margin:0 auto 20px;line-height:1.45}
+.signin-form{display:grid;gap:13px;text-align:left}
+.signin-form label{font-size:12px;font-weight:800;color:#5e5266}
+.signin-form input{width:100%;margin-top:6px;border:1px solid #e4d9e2;border-radius:14px;background:#faf7fa;padding:14px;font-size:16px;outline:none}
+.signin-form input:disabled{opacity:.72}
+.signin-button{width:100%;border:0;border-radius:14px;padding:14px;background:linear-gradient(135deg,#eaa8c4,#b9a7e8);font-weight:900;font-size:16px;margin-top:2px}
+.signin-button:disabled{opacity:.7}
+.signin-status{margin-top:16px;padding:12px;border-radius:14px;background:#f6f0fb;color:#6e5c79;font-size:13px;font-weight:700}
+.signin-note{font-size:11px;color:var(--muted);line-height:1.4;margin:12px 8px 0}
+.private-app[hidden]{display:none!important}
