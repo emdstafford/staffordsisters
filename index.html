@@ -20,168 +20,73 @@
       <p class="small">PRIVATE FAMILY APP</p>
       <h1>Stafford Sisters</h1>
       <p class="signin-copy">Sign in to enter your family's private space.</p>
-
-      <form class="signin-form" onsubmit="return false;">
-        <label>
-          Username
-          <input type="text" autocomplete="username" placeholder="Your username" disabled>
-        </label>
-        <label>
-          Password
-          <input type="password" autocomplete="current-password" placeholder="Your password" disabled>
-        </label>
-        <button type="button" class="signin-button" disabled>Sign In</button>
+      <form id="signin-form" class="signin-form">
+        <label>Username<input id="username" type="text" autocomplete="username" placeholder="Your username" required></label>
+        <label>Password<input id="password" type="password" autocomplete="current-password" placeholder="Your password" required></label>
+        <button id="signin-button" type="submit" class="signin-button">Sign In</button>
       </form>
-
-      <div class="signin-status">
-        🔒 Family accounts are being set up now.
-      </div>
-      <p class="signin-note">There is no public sign-up. Family members will receive an approved account.</p>
+      <div id="signin-status" class="signin-status" hidden></div>
+      <p class="signin-note">🔒 Private family app. There is no public sign-up.</p>
     </div>
   </section>
 
   <div id="private-app" class="private-app" hidden>
-  <header class="topbar">
-    <div>
-      <div class="eyebrow">HAZEL + LYDIA</div>
-      <h1>Stafford Sisters <span>💕</span></h1>
-    </div>
-    <button class="avatar" aria-label="Profile">SS</button>
-  </header>
-
-  <main id="app">
-    <section class="page active" id="home">
-      <div class="hello-card">
-        <div>
-          <p class="small">Welcome to your space ✨</p>
-          <h2>Hi, Sisters!</h2>
-          <p>Make something, share something, cook something, or just have fun together.</p>
+    <header class="topbar">
+      <div><div class="eyebrow">HAZEL + LYDIA</div><h1>Stafford Sisters <span>💕</span></h1></div>
+      <button id="signout-button" class="avatar" aria-label="Sign out">SS</button>
+    </header>
+    <main id="app">
+      <section class="page active" id="home">
+        <div class="hello-card"><div><p class="small">Welcome to your space ✨</p><h2>Hi, Sisters!</h2><p>Make something, share something, cook something, or just have fun together.</p></div><div class="sparkles">✨💕✨</div></div>
+        <h3 class="section-title">What do you want to do?</h3>
+        <div class="feature-grid">
+          <button class="feature-card pink" data-page="sisters"><span>💬</span><strong>Sisters</strong><small>Posts, pictures & family</small></button>
+          <button class="feature-card peach" data-page="kitchen"><span>🍳</span><strong>Kitchen</strong><small>Recipes & cooking fun</small></button>
+          <button class="feature-card purple" data-page="create"><span>🎨</span><strong>Create</strong><small>Ideas, crafts & projects</small></button>
+          <button class="feature-card blue" data-page="more"><span>📚</span><strong>Teacher Corner</strong><small>Resources & school ideas</small></button>
         </div>
-        <div class="sparkles">✨💕✨</div>
-      </div>
+        <div class="coming-card"><div class="coming-icon">📺</div><div><strong>Stafford Sisters TV</strong><p>Shows, movies, favorites and more are coming soon!</p></div></div>
+      </section>
 
-      <h3 class="section-title">What do you want to do?</h3>
-      <div class="feature-grid">
-        <button class="feature-card pink" data-page="sisters"><span>💬</span><strong>Sisters</strong><small>Posts, pictures & family</small></button>
-        <button class="feature-card peach" data-page="kitchen"><span>🍳</span><strong>Kitchen</strong><small>Recipes & cooking fun</small></button>
-        <button class="feature-card purple" data-page="create"><span>🎨</span><strong>Create</strong><small>Ideas, crafts & projects</small></button>
-        <button class="feature-card blue" data-page="more"><span>📚</span><strong>Teacher Corner</strong><small>Resources & school ideas</small></button>
-      </div>
+      <section class="page" id="sisters">
+        <div class="page-heading"><div><p class="small">OUR FAMILY SPACE</p><h2>Sisters Feed 💕</h2></div><button class="round-btn" data-page="create">＋</button></div>
+        <div class="story-row"><button class="story" data-page="profile-hazel"><span class="story-ring profile-ring">H</span><small>Hazel</small></button><button class="story"><span class="story-ring">L</span><small>Lydia</small></button><button class="story"><span class="story-ring add">＋</span><small>Family</small></button></div>
+        <article class="post-card"><div class="post-person"><button class="profile-link mini-avatar" data-page="profile-hazel">H</button><div><button class="name-link" data-page="profile-hazel"><strong>Hazel</strong></button><small>Stafford Sisters · Just now</small></div><span class="audience">🔒 Family</span></div><p>Welcome to Stafford Sisters! This is where our family posts, pictures and fun things will go. 💕</p><div class="photo-placeholder">📸<br><small>Pictures will live here</small></div><div class="post-actions"><button>♡ Like</button><button>💬 Comment</button><button>↗ Share</button></div></article>
+      </section>
 
-      <div class="coming-card">
-        <div class="coming-icon">📺</div>
-        <div><strong>Stafford Sisters TV</strong><p>Shows, movies, favorites and more are coming soon!</p></div>
-      </div>
-    </section>
+      <section class="page" id="create">
+        <div class="page-heading"><div><p class="small">MAKE SOMETHING</p><h2>Create ✨</h2></div></div>
+        <div class="composer-card"><div class="composer-top"><button class="profile-link mini-avatar" data-page="profile-hazel">H</button><button class="fake-input">What do you want to make or share?</button></div><div class="composer-options"><button>📷 Photo</button><button>✏️ Post</button><button>🎨 Project</button></div></div>
+        <div class="big-choice"><span>🧁</span><div><strong>Create a recipe</strong><p>Save something delicious you made.</p></div><b>›</b></div><div class="big-choice"><span>🖍️</span><div><strong>Start a project</strong><p>Crafts, drawings, ideas and inventions.</p></div><b>›</b></div><div class="big-choice"><span>📝</span><div><strong>Make a teacher resource</strong><p>Worksheets, classroom ideas and activities.</p></div><b>›</b></div>
+      </section>
 
-    <section class="page" id="sisters">
-      <div class="page-heading"><div><p class="small">OUR FAMILY SPACE</p><h2>Sisters Feed 💕</h2></div><button class="round-btn" data-page="create">＋</button></div>
-      <div class="story-row">
-        <button class="story" data-page="profile-hazel"><span class="story-ring profile-ring">H</span><small>Hazel</small></button>
-        <button class="story"><span class="story-ring">L</span><small>Lydia</small></button>
-        <button class="story"><span class="story-ring add">＋</span><small>Family</small></button>
-      </div>
-      <article class="post-card">
-        <div class="post-person"><button class="profile-link mini-avatar" data-page="profile-hazel">H</button><div><button class="name-link" data-page="profile-hazel"><strong>Hazel</strong></button><small>Stafford Sisters · Just now</small></div><span class="audience">🔒 Family</span></div>
-        <p>Welcome to Stafford Sisters! This is where our family posts, pictures and fun things will go. 💕</p>
-        <div class="photo-placeholder">📸<br><small>Pictures will live here</small></div>
-        <div class="post-actions"><button>♡ Like</button><button>💬 Comment</button><button>↗ Share</button></div>
-      </article>
-      <div class="info-card"><strong>Coming next</strong><p>Private family accounts, family-only posts, profiles, pictures and comments.</p></div>
-    </section>
+      <section class="page" id="kitchen"><div class="page-heading"><div><p class="small">STAFFORD SISTERS KITCHEN</p><h2>Let's Cook! 🍳</h2></div></div><div class="kitchen-hero"><span>👩‍🍳</span><h3>What's cooking today?</h3><p>Keep your favorite recipes, rate what you make and challenge each other.</p><button>＋ Add a recipe</button></div><h3 class="section-title">Our recipe box</h3><div class="empty-card">🍪<strong>Your recipes will show up here.</strong><small>Hazel can add the first one!</small></div></section>
 
-    <section class="page" id="create">
-      <div class="page-heading"><div><p class="small">MAKE SOMETHING</p><h2>Create ✨</h2></div></div>
-      <div class="composer-card">
-        <div class="composer-top"><button class="profile-link mini-avatar" data-page="profile-hazel">H</button><button class="fake-input">What do you want to make or share?</button></div>
-        <div class="composer-options"><button>📷 Photo</button><button>✏️ Post</button><button>🎨 Project</button></div>
-      </div>
-      <div class="big-choice"><span>🧁</span><div><strong>Create a recipe</strong><p>Save something delicious you made.</p></div><b>›</b></div>
-      <div class="big-choice"><span>🖍️</span><div><strong>Start a project</strong><p>Crafts, drawings, ideas and inventions.</p></div><b>›</b></div>
-      <div class="big-choice"><span>📝</span><div><strong>Make a teacher resource</strong><p>Worksheets, classroom ideas and activities.</p></div><b>›</b></div>
-    </section>
+      <section class="page" id="more"><div class="page-heading"><div><p class="small">EXPLORE</p><h2>More Fun ✨</h2></div></div><div class="menu-list"><button><span>📚</span><div><strong>Teacher Corner</strong><small>Resources, worksheets & ideas</small></div><b>›</b></button><button><span>📺</span><div><strong>Stafford Sisters TV</strong><small>Shows, movies & watch lists</small></div><b>›</b></button><button><span>⭐</span><div><strong>Our Favorites</strong><small>Everything Hazel & Lydia love</small></div><b>›</b></button><button data-page="profile-hazel"><span>👨‍👩‍👧‍👧</span><div><strong>Family</strong><small>Family profiles & pages</small></div><b>›</b></button></div></section>
 
-    <section class="page" id="kitchen">
-      <div class="page-heading"><div><p class="small">STAFFORD SISTERS KITCHEN</p><h2>Let's Cook! 🍳</h2></div></div>
-      <div class="kitchen-hero"><span>👩‍🍳</span><h3>What's cooking today?</h3><p>Keep your favorite recipes, rate what you make and challenge each other.</p><button>＋ Add a recipe</button></div>
-      <h3 class="section-title">Our recipe box</h3>
-      <div class="empty-card">🍪<strong>Your recipes will show up here.</strong><small>Hazel can add the first one!</small></div>
-    </section>
-
-    <section class="page" id="more">
-      <div class="page-heading"><div><p class="small">EXPLORE</p><h2>More Fun ✨</h2></div></div>
-      <div class="menu-list">
-        <button><span>📚</span><div><strong>Teacher Corner</strong><small>Resources, worksheets & ideas</small></div><b>›</b></button>
-        <button><span>📺</span><div><strong>Stafford Sisters TV</strong><small>Shows, movies & watch lists</small></div><b>›</b></button>
-        <button><span>⭐</span><div><strong>Our Favorites</strong><small>Everything Hazel & Lydia love</small></div><b>›</b></button>
-        <button data-page="profile-hazel"><span>👨‍👩‍👧‍👧</span><div><strong>Family</strong><small>Family profiles & pages</small></div><b>›</b></button>
-      </div>
-    </section>
-
-    <section class="page" id="profile-hazel">
-      <button class="back-button" data-page="sisters">‹ Back to Sisters</button>
-
-      <div class="profile-cover">
-        <div class="cover-sparkle">✨</div>
-      </div>
-
-      <div class="profile-card">
-        <div class="profile-avatar-large">H</div>
-        <div class="profile-title">
-          <h2>Hazel 💕</h2>
-          <p>Stafford Sister</p>
-        </div>
-        <button class="edit-profile-button">✏️ Edit Profile</button>
-      </div>
-
-      <div class="profile-bio">
-        <p class="small">ABOUT ME</p>
-        <h3>Hi! I'm Hazel! 👋</h3>
-        <p>This is my Stafford Sisters page. I can share the things I make, cook, love and want my family to see.</p>
-      </div>
-
-      <div class="profile-stats">
-        <div><strong>0</strong><small>Posts</small></div>
-        <div><strong>0</strong><small>Recipes</small></div>
-        <div><strong>0</strong><small>Creations</small></div>
-      </div>
-
-      <h3 class="section-title">Hazel's World ✨</h3>
-      <div class="profile-links">
-        <button data-page="sisters"><span>💬</span><div><strong>My Posts</strong><small>Things I've shared with family</small></div><b>›</b></button>
-        <button data-page="kitchen"><span>🍳</span><div><strong>Things I've Cooked</strong><small>Recipes and kitchen adventures</small></div><b>›</b></button>
-        <button data-page="create"><span>🎨</span><div><strong>My Creations</strong><small>Crafts, projects and ideas</small></div><b>›</b></button>
-        <button data-page="more"><span>📚</span><div><strong>Teacher Corner</strong><small>School ideas and resources</small></div><b>›</b></button>
-        <button data-page="more"><span>⭐</span><div><strong>My Favorites</strong><small>Shows, music, sports and more</small></div><b>›</b></button>
-      </div>
-
-      <div class="private-photo-note">
-        <span>🔒</span>
-        <div><strong>Your real profile picture is ready.</strong><p>We'll add it after family login is turned on so it stays inside your private family space.</p></div>
-      </div>
-    </section>
-
-  </main>
-
-  <nav class="bottom-nav" aria-label="Main navigation">
-    <button class="nav-btn active" data-page="home"><span>🏠</span><small>Home</small></button>
-    <button class="nav-btn" data-page="sisters"><span>💕</span><small>Sisters</small></button>
-    <button class="nav-btn create-nav" data-page="create"><span>＋</span><small>Create</small></button>
-    <button class="nav-btn" data-page="kitchen"><span>🍳</span><small>Kitchen</small></button>
-    <button class="nav-btn" data-page="more"><span>✨</span><small>More</small></button>
-  </nav>
-
-  <script>
-    const privateApp = document.getElementById('private-app');
-    const pages = document.querySelectorAll('.page');
-    const navButtons = document.querySelectorAll('.nav-btn');
-    function showPage(name) {
-      pages.forEach(page => page.classList.toggle('active', page.id === name));
-      navButtons.forEach(button => button.classList.toggle('active', button.dataset.page === name));
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-    document.querySelectorAll('[data-page]').forEach(button => button.addEventListener('click', () => showPage(button.dataset.page)));
-  </script>
+      <section class="page" id="profile-hazel">
+        <button class="back-button" data-page="sisters">‹ Back to Sisters</button><div class="profile-cover"><div class="cover-sparkle">✨</div></div><div class="profile-card"><div class="profile-avatar-large">H</div><div class="profile-title"><h2>Hazel 💕</h2><p>Stafford Sister</p></div><button class="edit-profile-button">✏️ Edit Profile</button></div>
+        <div class="profile-bio"><p class="small">ABOUT ME</p><h3>Hi! I'm Hazel! 👋</h3><p>This is my Stafford Sisters page. I can share the things I make, cook, love and want my family to see.</p></div><div class="profile-stats"><div><strong>0</strong><small>Posts</small></div><div><strong>0</strong><small>Recipes</small></div><div><strong>0</strong><small>Creations</small></div></div>
+        <h3 class="section-title">Hazel's World ✨</h3><div class="profile-links"><button data-page="sisters"><span>💬</span><div><strong>My Posts</strong><small>Things I've shared with family</small></div><b>›</b></button><button data-page="kitchen"><span>🍳</span><div><strong>Things I've Cooked</strong><small>Recipes and kitchen adventures</small></div><b>›</b></button><button data-page="create"><span>🎨</span><div><strong>My Creations</strong><small>Crafts, projects and ideas</small></div><b>›</b></button><button data-page="more"><span>📚</span><div><strong>Teacher Corner</strong><small>School ideas and resources</small></div><b>›</b></button><button data-page="more"><span>⭐</span><div><strong>My Favorites</strong><small>Shows, music, sports and more</small></div><b>›</b></button></div>
+      </section>
+    </main>
+    <nav class="bottom-nav" aria-label="Main navigation"><button class="nav-btn active" data-page="home"><span>🏠</span><small>Home</small></button><button class="nav-btn" data-page="sisters"><span>💕</span><small>Sisters</small></button><button class="nav-btn create-nav" data-page="create"><span>＋</span><small>Create</small></button><button class="nav-btn" data-page="kitchen"><span>🍳</span><small>Kitchen</small></button><button class="nav-btn" data-page="more"><span>✨</span><small>More</small></button></nav>
   </div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    const supabase = createClient('https://pnawnvnselteqqgkqdva.supabase.co', 'sb_publishable_4y_vhUfDDIAR-nWw3ZO-zg_H0GmM3Mk');
+    const signinScreen=document.getElementById('signin-screen'), privateApp=document.getElementById('private-app'), form=document.getElementById('signin-form'), status=document.getElementById('signin-status'), button=document.getElementById('signin-button');
+    const usernameToEmail = u => `${u.trim().toLowerCase().replace(/[^a-z0-9._-]/g,'')}@staffordsisters.family`;
+    function showSignedIn(session){signinScreen.hidden=true;privateApp.hidden=false;}
+    function showSignedOut(){privateApp.hidden=true;signinScreen.hidden=false;}
+    const { data:{session} }=await supabase.auth.getSession(); session?showSignedIn(session):showSignedOut();
+    supabase.auth.onAuthStateChange((_event,session)=>session?showSignedIn(session):showSignedOut());
+    form.addEventListener('submit',async e=>{e.preventDefault();status.hidden=true;button.disabled=true;button.textContent='Signing In…';const username=document.getElementById('username').value;const password=document.getElementById('password').value;const {error}=await supabase.auth.signInWithPassword({email:usernameToEmail(username),password});if(error){status.textContent='That username or password did not work.';status.hidden=false;}button.disabled=false;button.textContent='Sign In';});
+    document.getElementById('signout-button').addEventListener('click',()=>supabase.auth.signOut());
+    const pages=document.querySelectorAll('.page'),navButtons=document.querySelectorAll('.nav-btn');
+    function showPage(name){pages.forEach(page=>page.classList.toggle('active',page.id===name));navButtons.forEach(b=>b.classList.toggle('active',b.dataset.page===name));window.scrollTo({top:0,behavior:'smooth'});}
+    document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+  </script>
 </body>
 </html>
