@@ -1,18 +1,108 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Stafford Sisters</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7b8d2">
+  <title>Stafford Sisters</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">HAZEL + LYDIA</div>
+      <h1>Stafford Sisters <span>💕</span></h1>
+    </div>
+    <button class="avatar" aria-label="Profile">SS</button>
+  </header>
 
-    <h1>Stafford Sisters 💕</h1>
+  <main id="app">
+    <section class="page active" id="home">
+      <div class="hello-card">
+        <div>
+          <p class="small">Welcome to your space ✨</p>
+          <h2>Hi, Sisters!</h2>
+          <p>Make something, share something, cook something, or just have fun together.</p>
+        </div>
+        <div class="sparkles">✨💕✨</div>
+      </div>
 
-    <p>Welcome to our website!</p>
+      <h3 class="section-title">What do you want to do?</h3>
+      <div class="feature-grid">
+        <button class="feature-card pink" data-page="sisters"><span>💬</span><strong>Sisters</strong><small>Posts, pictures & family</small></button>
+        <button class="feature-card peach" data-page="kitchen"><span>🍳</span><strong>Kitchen</strong><small>Recipes & cooking fun</small></button>
+        <button class="feature-card purple" data-page="create"><span>🎨</span><strong>Create</strong><small>Ideas, crafts & projects</small></button>
+        <button class="feature-card blue" data-page="more"><span>📚</span><strong>Teacher Corner</strong><small>Resources & school ideas</small></button>
+      </div>
 
-    <h2>Stafford Sisters TV 📺</h2>
+      <div class="coming-card">
+        <div class="coming-icon">📺</div>
+        <div><strong>Stafford Sisters TV</strong><p>Shows, movies, favorites and more are coming soon!</p></div>
+      </div>
+    </section>
 
-    <p>Our shows, movies, and more are coming soon!</p>
+    <section class="page" id="sisters">
+      <div class="page-heading"><div><p class="small">OUR FAMILY SPACE</p><h2>Sisters Feed 💕</h2></div><button class="round-btn" data-page="create">＋</button></div>
+      <div class="story-row">
+        <button class="story"><span class="story-ring">H</span><small>Hazel</small></button>
+        <button class="story"><span class="story-ring">L</span><small>Lydia</small></button>
+        <button class="story"><span class="story-ring add">＋</span><small>Family</small></button>
+      </div>
+      <article class="post-card">
+        <div class="post-person"><span class="mini-avatar">H</span><div><strong>Hazel</strong><small>Stafford Sisters · Just now</small></div><span class="audience">👨‍👩‍👧‍👧 Family</span></div>
+        <p>Welcome to Stafford Sisters! This is where our family posts, pictures and fun things will go. 💕</p>
+        <div class="photo-placeholder">📸<br><small>Pictures will live here</small></div>
+        <div class="post-actions"><button>♡ Like</button><button>💬 Comment</button><button>↗ Share</button></div>
+      </article>
+      <div class="info-card"><strong>Coming next</strong><p>Family accounts, private family posts, profiles, pictures, comments and a carefully controlled public-post option.</p></div>
+    </section>
 
+    <section class="page" id="create">
+      <div class="page-heading"><div><p class="small">MAKE SOMETHING</p><h2>Create ✨</h2></div></div>
+      <div class="composer-card">
+        <div class="composer-top"><span class="mini-avatar">H</span><button class="fake-input">What do you want to make or share?</button></div>
+        <div class="composer-options"><button>📷 Photo</button><button>✏️ Post</button><button>🎨 Project</button></div>
+      </div>
+      <div class="big-choice"><span>🧁</span><div><strong>Create a recipe</strong><p>Save something delicious you made.</p></div><b>›</b></div>
+      <div class="big-choice"><span>🖍️</span><div><strong>Start a project</strong><p>Crafts, drawings, ideas and inventions.</p></div><b>›</b></div>
+      <div class="big-choice"><span>📝</span><div><strong>Make a teacher resource</strong><p>Worksheets, classroom ideas and activities.</p></div><b>›</b></div>
+    </section>
+
+    <section class="page" id="kitchen">
+      <div class="page-heading"><div><p class="small">STAFFORD SISTERS KITCHEN</p><h2>Let's Cook! 🍳</h2></div></div>
+      <div class="kitchen-hero"><span>👩‍🍳</span><h3>What's cooking today?</h3><p>Keep your favorite recipes, rate what you make and challenge each other.</p><button>＋ Add a recipe</button></div>
+      <h3 class="section-title">Our recipe box</h3>
+      <div class="empty-card">🍪<strong>Your recipes will show up here.</strong><small>Hazel can add the first one!</small></div>
+    </section>
+
+    <section class="page" id="more">
+      <div class="page-heading"><div><p class="small">EXPLORE</p><h2>More Fun ✨</h2></div></div>
+      <div class="menu-list">
+        <button><span>📚</span><div><strong>Teacher Corner</strong><small>Resources, worksheets & ideas</small></div><b>›</b></button>
+        <button><span>📺</span><div><strong>Stafford Sisters TV</strong><small>Shows, movies & watch lists</small></div><b>›</b></button>
+        <button><span>⭐</span><div><strong>Our Favorites</strong><small>Everything Hazel & Lydia love</small></div><b>›</b></button>
+        <button><span>👨‍👩‍👧‍👧</span><div><strong>Family</strong><small>Family profiles & pages</small></div><b>›</b></button>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <button class="nav-btn active" data-page="home"><span>🏠</span><small>Home</small></button>
+    <button class="nav-btn" data-page="sisters"><span>💕</span><small>Sisters</small></button>
+    <button class="nav-btn create-nav" data-page="create"><span>＋</span><small>Create</small></button>
+    <button class="nav-btn" data-page="kitchen"><span>🍳</span><small>Kitchen</small></button>
+    <button class="nav-btn" data-page="more"><span>✨</span><small>More</small></button>
+  </nav>
+
+  <script>
+    const pages = document.querySelectorAll('.page');
+    const navButtons = document.querySelectorAll('.nav-btn');
+    function showPage(name) {
+      pages.forEach(page => page.classList.toggle('active', page.id === name));
+      navButtons.forEach(button => button.classList.toggle('active', button.dataset.page === name));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    document.querySelectorAll('[data-page]').forEach(button => button.addEventListener('click', () => showPage(button.dataset.page)));
+  </script>
 </body>
 </html>
