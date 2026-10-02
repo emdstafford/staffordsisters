@@ -14,6 +14,33 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <section id="signin-screen" class="signin-screen">
+    <div class="signin-card">
+      <img src="stafford-sisters-icon.png" alt="Stafford Sisters" class="signin-logo">
+      <p class="small">PRIVATE FAMILY APP</p>
+      <h1>Stafford Sisters</h1>
+      <p class="signin-copy">Sign in to enter your family's private space.</p>
+
+      <form class="signin-form" onsubmit="return false;">
+        <label>
+          Username
+          <input type="text" autocomplete="username" placeholder="Your username" disabled>
+        </label>
+        <label>
+          Password
+          <input type="password" autocomplete="current-password" placeholder="Your password" disabled>
+        </label>
+        <button type="button" class="signin-button" disabled>Sign In</button>
+      </form>
+
+      <div class="signin-status">
+        🔒 Family accounts are being set up now.
+      </div>
+      <p class="signin-note">There is no public sign-up. Family members will receive an approved account.</p>
+    </div>
+  </section>
+
+  <div id="private-app" class="private-app" hidden>
   <header class="topbar">
     <div>
       <div class="eyebrow">HAZEL + LYDIA</div>
@@ -145,6 +172,7 @@
   </nav>
 
   <script>
+    const privateApp = document.getElementById('private-app');
     const pages = document.querySelectorAll('.page');
     const navButtons = document.querySelectorAll('.nav-btn');
     function showPage(name) {
@@ -154,5 +182,6 @@
     }
     document.querySelectorAll('[data-page]').forEach(button => button.addEventListener('click', () => showPage(button.dataset.page)));
   </script>
+  </div>
 </body>
 </html>
