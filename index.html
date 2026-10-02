@@ -50,12 +50,12 @@
     <section class="page" id="sisters">
       <div class="page-heading"><div><p class="small">OUR FAMILY SPACE</p><h2>Sisters Feed 💕</h2></div><button class="round-btn" data-page="create">＋</button></div>
       <div class="story-row">
-        <button class="story"><span class="story-ring">H</span><small>Hazel</small></button>
+        <button class="story" data-page="profile-hazel"><span class="story-ring profile-ring">H</span><small>Hazel</small></button>
         <button class="story"><span class="story-ring">L</span><small>Lydia</small></button>
         <button class="story"><span class="story-ring add">＋</span><small>Family</small></button>
       </div>
       <article class="post-card">
-        <div class="post-person"><span class="mini-avatar">H</span><div><strong>Hazel</strong><small>Stafford Sisters · Just now</small></div><span class="audience">🔒 Family</span></div>
+        <div class="post-person"><button class="profile-link mini-avatar" data-page="profile-hazel">H</button><div><button class="name-link" data-page="profile-hazel"><strong>Hazel</strong></button><small>Stafford Sisters · Just now</small></div><span class="audience">🔒 Family</span></div>
         <p>Welcome to Stafford Sisters! This is where our family posts, pictures and fun things will go. 💕</p>
         <div class="photo-placeholder">📸<br><small>Pictures will live here</small></div>
         <div class="post-actions"><button>♡ Like</button><button>💬 Comment</button><button>↗ Share</button></div>
@@ -66,7 +66,7 @@
     <section class="page" id="create">
       <div class="page-heading"><div><p class="small">MAKE SOMETHING</p><h2>Create ✨</h2></div></div>
       <div class="composer-card">
-        <div class="composer-top"><span class="mini-avatar">H</span><button class="fake-input">What do you want to make or share?</button></div>
+        <div class="composer-top"><button class="profile-link mini-avatar" data-page="profile-hazel">H</button><button class="fake-input">What do you want to make or share?</button></div>
         <div class="composer-options"><button>📷 Photo</button><button>✏️ Post</button><button>🎨 Project</button></div>
       </div>
       <div class="big-choice"><span>🧁</span><div><strong>Create a recipe</strong><p>Save something delicious you made.</p></div><b>›</b></div>
@@ -87,9 +87,53 @@
         <button><span>📚</span><div><strong>Teacher Corner</strong><small>Resources, worksheets & ideas</small></div><b>›</b></button>
         <button><span>📺</span><div><strong>Stafford Sisters TV</strong><small>Shows, movies & watch lists</small></div><b>›</b></button>
         <button><span>⭐</span><div><strong>Our Favorites</strong><small>Everything Hazel & Lydia love</small></div><b>›</b></button>
-        <button><span>👨‍👩‍👧‍👧</span><div><strong>Family</strong><small>Family profiles & pages</small></div><b>›</b></button>
+        <button data-page="profile-hazel"><span>👨‍👩‍👧‍👧</span><div><strong>Family</strong><small>Family profiles & pages</small></div><b>›</b></button>
       </div>
     </section>
+
+    <section class="page" id="profile-hazel">
+      <button class="back-button" data-page="sisters">‹ Back to Sisters</button>
+
+      <div class="profile-cover">
+        <div class="cover-sparkle">✨</div>
+      </div>
+
+      <div class="profile-card">
+        <div class="profile-avatar-large">H</div>
+        <div class="profile-title">
+          <h2>Hazel 💕</h2>
+          <p>Stafford Sister</p>
+        </div>
+        <button class="edit-profile-button">✏️ Edit Profile</button>
+      </div>
+
+      <div class="profile-bio">
+        <p class="small">ABOUT ME</p>
+        <h3>Hi! I'm Hazel! 👋</h3>
+        <p>This is my Stafford Sisters page. I can share the things I make, cook, love and want my family to see.</p>
+      </div>
+
+      <div class="profile-stats">
+        <div><strong>0</strong><small>Posts</small></div>
+        <div><strong>0</strong><small>Recipes</small></div>
+        <div><strong>0</strong><small>Creations</small></div>
+      </div>
+
+      <h3 class="section-title">Hazel's World ✨</h3>
+      <div class="profile-links">
+        <button data-page="sisters"><span>💬</span><div><strong>My Posts</strong><small>Things I've shared with family</small></div><b>›</b></button>
+        <button data-page="kitchen"><span>🍳</span><div><strong>Things I've Cooked</strong><small>Recipes and kitchen adventures</small></div><b>›</b></button>
+        <button data-page="create"><span>🎨</span><div><strong>My Creations</strong><small>Crafts, projects and ideas</small></div><b>›</b></button>
+        <button data-page="more"><span>📚</span><div><strong>Teacher Corner</strong><small>School ideas and resources</small></div><b>›</b></button>
+        <button data-page="more"><span>⭐</span><div><strong>My Favorites</strong><small>Shows, music, sports and more</small></div><b>›</b></button>
+      </div>
+
+      <div class="private-photo-note">
+        <span>🔒</span>
+        <div><strong>Your real profile picture is ready.</strong><p>We'll add it after family login is turned on so it stays inside your private family space.</p></div>
+      </div>
+    </section>
+
   </main>
 
   <nav class="bottom-nav" aria-label="Main navigation">
