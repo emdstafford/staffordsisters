@@ -1,10 +1,10 @@
 @import url('./base-style.css');
 
-/* Loop family strip: fit all seven family members on one mobile row. */
-#family-stories{align-items:center;display:flex!important;gap:7px!important;overflow-x:hidden!important;justify-content:space-between!important;width:100%!important}
-#family-stories .story{flex:0 0 44px!important;width:44px!important;min-width:44px!important;margin:0!important;padding:0!important}
+/* Loop family strip: fit all seven family members inside the page width. */
+#family-stories{align-items:center;display:flex!important;gap:4px!important;overflow:hidden!important;justify-content:space-between!important;width:100%!important;box-sizing:border-box!important;padding:0 2px!important}
+#family-stories .story{flex:0 0 40px!important;width:40px!important;min-width:40px!important;max-width:40px!important;margin:0!important;padding:0!important}
 #family-stories .story small{display:none!important}
-#family-stories .story-ring{width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;overflow:hidden;border-width:3px!important}
+#family-stories .story-ring{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;max-width:40px!important;max-height:40px!important;box-sizing:border-box!important;overflow:hidden;border-width:3px!important}
 #family-stories .story-ring img{width:100%!important;height:100%!important;object-fit:cover!important}
 
 /* family_profiles is loaded alphabetically by display_name:
@@ -20,7 +20,7 @@
 
 /* When there is no profile photo, show initials inside the circle only. */
 #family-stories .story-ring:not(.avatar-photo){font-size:0!important}
-#family-stories .story-ring:not(.avatar-photo)::after{font-size:15px;font-weight:900;line-height:1}
+#family-stories .story-ring:not(.avatar-photo)::after{font-size:13px;font-weight:900;line-height:1}
 #family-stories .story:nth-child(4) .story-ring:not(.avatar-photo)::after{content:'HS'}
 #family-stories .story:nth-child(5) .story-ring:not(.avatar-photo)::after{content:'LS'}
 #family-stories .story:nth-child(6) .story-ring:not(.avatar-photo)::after{content:'ES'}
