@@ -6,21 +6,20 @@
 #family-stories .story small{display:none!important}
 #family-stories .story-ring{width:58px;height:58px;overflow:hidden}
 
-/* Fixed family order from the current seven profile rows:
-   Hazel, Lydia, Mama, Granny B, Aunt Kayla, Auntie E, Uncle Jared Chase. */
-#family-stories .story:nth-child(5){order:1!important}
-#family-stories .story:nth-child(4){order:2!important}
+/* Family order: Hazel, Lydia, Mama, Granny B, Aunt Kayla, Auntie E, Uncle Jared Chase. */
+#family-stories .story:nth-child(4){order:1!important}
+#family-stories .story:nth-child(5){order:2!important}
 #family-stories .story:nth-child(6){order:3!important}
 #family-stories .story:nth-child(2){order:4!important}
 #family-stories .story:nth-child(1){order:5!important}
 #family-stories .story:nth-child(7){order:6!important}
 #family-stories .story:nth-child(3){order:7!important}
 
-/* If a profile has no photo, show that person's initials inside the circle. */
+/* When there is no profile photo, show initials inside the circle only. */
 #family-stories .story-ring:not(.avatar-photo){font-size:0!important}
 #family-stories .story-ring:not(.avatar-photo)::after{font-size:20px;font-weight:900;line-height:1}
-#family-stories .story:nth-child(5) .story-ring:not(.avatar-photo)::after{content:'HS'}
-#family-stories .story:nth-child(4) .story-ring:not(.avatar-photo)::after{content:'LS'}
+#family-stories .story:nth-child(4) .story-ring:not(.avatar-photo)::after{content:'HS'}
+#family-stories .story:nth-child(5) .story-ring:not(.avatar-photo)::after{content:'LS'}
 #family-stories .story:nth-child(6) .story-ring:not(.avatar-photo)::after{content:'ES'}
 #family-stories .story:nth-child(2) .story-ring:not(.avatar-photo)::after{content:'GB'}
 #family-stories .story:nth-child(1) .story-ring:not(.avatar-photo)::after{content:'AK'}
