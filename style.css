@@ -1,11 +1,12 @@
 @import url('./base-style.css');
 
-/* Loop family strip: fit all seven family members inside the page width. */
-#family-stories{align-items:center;display:flex!important;gap:4px!important;overflow:hidden!important;justify-content:space-between!important;width:100%!important;box-sizing:border-box!important;padding:0 2px!important}
+/* Loop family strip: compact seven-person row with minimal gap before feed. */
+#family-stories{align-items:center;display:flex!important;gap:8px!important;overflow:visible!important;justify-content:flex-start!important;width:100%!important;box-sizing:border-box!important;padding:0 2px 7px!important;margin:0!important}
 #family-stories .story{flex:0 0 40px!important;width:40px!important;min-width:40px!important;max-width:40px!important;margin:0!important;padding:0!important}
 #family-stories .story small{display:none!important}
 #family-stories .story-ring{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;max-width:40px!important;max-height:40px!important;box-sizing:border-box!important;overflow:hidden;border-width:3px!important}
 #family-stories .story-ring img{width:100%!important;height:100%!important;object-fit:cover!important}
+#loop-feed{margin-top:0!important;padding-top:0!important}
 
 /* family_profiles is loaded alphabetically by display_name:
    1 Aunt Kayla, 2 Auntie E, 3 Granny B, 4 Hazel, 5 Lydia, 6 Mama, 7 Uncle Jared Chase.
