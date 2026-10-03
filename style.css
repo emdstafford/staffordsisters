@@ -2,3 +2,15 @@
 /* Teacher Corner fallback: keep the resource creator available even if the add-button handler fails on installed iOS web apps. */
 #teacher.active #teacher-form[hidden]{display:grid!important}
 #teacher.active #add-teacher{display:none!important}
+
+/* Loop family strip: fixed family order with short initials under each photo. */
+#family-stories .story{flex:0 0 58px}
+#family-stories .story small{font-size:0;height:14px;line-height:14px;font-weight:800;color:var(--muted)}
+#family-stories .story small::after{font-size:10px}
+#family-stories .story:nth-child(4){order:1}#family-stories .story:nth-child(4) small::after{content:'H'}
+#family-stories .story:nth-child(5){order:2}#family-stories .story:nth-child(5) small::after{content:'L'}
+#family-stories .story:nth-child(6){order:3}#family-stories .story:nth-child(6) small::after{content:'M'}
+#family-stories .story:nth-child(3){order:4}#family-stories .story:nth-child(3) small::after{content:'GB'}
+#family-stories .story:nth-child(1){order:5}#family-stories .story:nth-child(1) small::after{content:'AK'}
+#family-stories .story:nth-child(2){order:6}#family-stories .story:nth-child(2) small::after{content:'AE'}
+#family-stories .story:nth-child(7){order:7}#family-stories .story:nth-child(7) small::after{content:'UJC'}
