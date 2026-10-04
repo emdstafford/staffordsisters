@@ -2,30 +2,27 @@
 
 /* Loop family strip: all seven family members on one compact row. */
 #family-stories{align-items:center;display:flex!important;gap:6px!important;overflow:visible!important;justify-content:flex-start!important;width:100%!important;box-sizing:border-box!important;padding:0 2px 7px!important;margin:0!important}
-#family-stories .story{flex:0 0 40px!important;width:40px!important;min-width:40px!important;max-width:40px!important;margin:0!important;padding:0!important}
+#family-stories .story{flex:0 0 40px!important;width:40px!important;min-width:40px!important;max-width:40px!important;margin:0!important;padding:0!important;order:6!important}
 #family-stories .story small{display:none!important}
 #family-stories .story-ring{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;max-width:40px!important;max-height:40px!important;box-sizing:border-box!important;overflow:hidden;border-width:3px!important}
 #family-stories .story-ring img{width:100%!important;height:100%!important;object-fit:cover!important}
 #loop-feed{margin-top:0!important;padding-top:0!important}
 
-/* family_profiles is loaded alphabetically by display_name:
-   1 Aunt Kayla, 2 Auntie E, 3 Granny B, 4 Hazel, 5 Lydia, 6 Mama, 7 Uncle Jared Chase.
-   Display in the requested family order. */
-#family-stories .story:nth-child(4){order:1!important}
-#family-stories .story:nth-child(5){order:2!important}
-#family-stories .story:nth-child(6){order:3!important}
-#family-stories .story:nth-child(3){order:4!important}
-#family-stories .story:nth-child(1){order:5!important}
-#family-stories .story:nth-child(2){order:6!important}
-#family-stories .story:nth-child(7){order:7!important}
+/* Permanent family order by actual account ID, so async photo loading cannot scramble it.
+   Auntie E is the only remaining family profile and therefore uses the default order 6. */
+#family-stories .story[data-user-id="2fde09f7-4252-4d9a-bdfb-908630877fd8"]{order:1!important} /* Hazel */
+#family-stories .story[data-user-id="6b0012b0-889f-4ee3-a664-a00eb17d1b4a"]{order:2!important} /* Lydia */
+#family-stories .story[data-user-id="d46217e5-ceee-4aab-994a-789b63d895f4"]{order:3!important} /* Mama */
+#family-stories .story[data-user-id="d5d14e42-84a9-4328-b988-33b932dcdd9d"]{order:4!important} /* Granny B */
+#family-stories .story[data-user-id="becabc13-35f8-4af3-8750-947a31c68e5a"]{order:5!important} /* Aunt Kayla */
+#family-stories .story[data-user-id="dcd2a864-d5d4-4fa3-9dd1-38d8e7a2df8e"]{order:7!important} /* Uncle Jared Chase */
 
 /* When there is no profile photo, show initials inside the circle only. */
 #family-stories .story-ring:not(.avatar-photo){font-size:0!important}
-#family-stories .story-ring:not(.avatar-photo)::after{font-size:13px;font-weight:900;line-height:1}
-#family-stories .story:nth-child(4) .story-ring:not(.avatar-photo)::after{content:'HS'}
-#family-stories .story:nth-child(5) .story-ring:not(.avatar-photo)::after{content:'LS'}
-#family-stories .story:nth-child(6) .story-ring:not(.avatar-photo)::after{content:'ES'}
-#family-stories .story:nth-child(3) .story-ring:not(.avatar-photo)::after{content:'GB'}
-#family-stories .story:nth-child(1) .story-ring:not(.avatar-photo)::after{content:'AK'}
-#family-stories .story:nth-child(2) .story-ring:not(.avatar-photo)::after{content:'AE'}
-#family-stories .story:nth-child(7) .story-ring:not(.avatar-photo)::after{content:'UJ'}
+#family-stories .story-ring:not(.avatar-photo)::after{content:'AE';font-size:13px;font-weight:900;line-height:1}
+#family-stories .story[data-user-id="2fde09f7-4252-4d9a-bdfb-908630877fd8"] .story-ring:not(.avatar-photo)::after{content:'HS'}
+#family-stories .story[data-user-id="6b0012b0-889f-4ee3-a664-a00eb17d1b4a"] .story-ring:not(.avatar-photo)::after{content:'LS'}
+#family-stories .story[data-user-id="d46217e5-ceee-4aab-994a-789b63d895f4"] .story-ring:not(.avatar-photo)::after{content:'ES'}
+#family-stories .story[data-user-id="d5d14e42-84a9-4328-b988-33b932dcdd9d"] .story-ring:not(.avatar-photo)::after{content:'GB'}
+#family-stories .story[data-user-id="becabc13-35f8-4af3-8750-947a31c68e5a"] .story-ring:not(.avatar-photo)::after{content:'AK'}
+#family-stories .story[data-user-id="dcd2a864-d5d4-4fa3-9dd1-38d8e7a2df8e"] .story-ring:not(.avatar-photo)::after{content:'UJ'}
