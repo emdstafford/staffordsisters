@@ -44,11 +44,14 @@ async function loadNotifications(){
 }
 function renderNotifications(){
  const list=$('#notification-list'),seen=notificationSeen();
- list.innerHTML=notificationItems.length?notificationItems.map(x=>'<button type="button" class="notification-item" data-notification-id="'+esc(x.id)+'" data-post-id="'+esc(x.post)+'" style="display:block;width:100%;padding:15px;text-align:left;background:'+(seen.has(x.id)?'#fff':'#fff0f6')+';border:1px solid #eee5ed;border-radius:16px;margin:8px 0"><strong>'+esc(profileFor(x.user).display_name)+'</strong> '+esc(x.message)+'<small style="display:block;color:#786d80;margin-top:5px">'+new Date(x.date).toLocaleString()+'</small></button>').join(''):'<div class="empty-card">No notifications yet 💕</div>';
+ list.innerHTML=notificationItems.length?notificationItems.map(x=>'<button type="button" class="notification-item" data-notification-id="'+esc(x.id)+'" data-post-id="'+esc(x.post)+'" style="display:block;width:100%;padding:15px;text-align:left;background:'+(seen.has(x.id)?'#fff':'#fff0f6')+';border:1px solid #eee5ed;border-radius:16px;margin:8px 0"><strong>'+esc(profileFor(x.user).display_name)+'</strong> '+esc(x.message)+'<small style="display:block;color:#786d80;margin-top:5px">'+new Date(x.date).toLocaleString()+'</small>'+(seen.has(x.id)?'<span style="display:block;margin-top:8px;color:#776b78">✓ Read</span>':'<span role="button" tabindex="0" data-mark-read="'+esc(x.id)+'" style="display:inline-block;margin-top:8px;padding:7px 11px;border-radius:10px;background:#f6dce9;color:#74334d;font-weight:700">✓ Mark as read</span>')+'</button>').join(''):'<div class="empty-card">No notifications yet 💕</div>';
 }
 $('#open-notifications').onclick=async()=>{showPage('notifications');await loadNotifications()};
 $('#notifications-back').onclick=()=>showPage('sisters');
 $('#notification-list').onclick=async e=>{
+ const mark=e.target.closest('[data-mark-read]');
+ if(mark){const seen=notificationSeen();seen.add(mark.dataset.markRead);saveNotificationSeen(seen);renderNotifications();const count=notificationItems.filter(x=>!seen.has(x.id)).length;$('#notification-count').textContent=count?'('+count+' new)':'';setDot(count>0);return}
+
  const b=e.target.closest('[data-notification-id]');if(!b)return;
  const seen=notificationSeen();seen.add(b.dataset.notificationId);saveNotificationSeen(seen);
  showPage('sisters');await loadLoop();
