@@ -51,10 +51,22 @@ async function loadNotifications(){
  const {data,error}=await supabase.from('loop_posts').select('id,user_id,body,created_at,loop_comments(id,user_id,body,created_at),loop_reactions(id,user_id,reaction)').order('created_at',{ascending:false}).limit(150);
  if(error){$('#notification-list').textContent='Could not load notifications. Please try again.';return}
  const items=[],prefs=notificationPrefs();
+ const [kr,tr]=await Promise.all([
+  prefs.kitchen?supabase.from('kitchen_recipes').select('id,user_id,title,created_at,kitchen_comments(id,user_id,body,created_at)').order('created_at',{ascending:false}).limit(100):Promise.resolve({data:[]}),
+  prefs.teacher?supabase.from('teacher_resources').select('id,user_id,title,created_at,teacher_comments(id,user_id,body,created_at)').order('created_at',{ascending:false}).limit(100):Promise.resolve({data:[]})
+ ]);
+ for(const p of kr.data||[]){
+  if(p.user_id!==me.id)items.push({id:'recipe:'+p.id,page:'kitchen',post:p.id,user:p.user_id,date:p.created_at,message:'shared a recipe in Kitchen: '+p.title});
+  for(const c of p.kitchen_comments||[])if(c.user_id!==me.id&&p.user_id===me.id)items.push({id:'kcomment:'+c.id,page:'kitchen',post:p.id,user:c.user_id,date:c.created_at,message:'commented on your recipe'});
+ }
+ for(const p of tr.data||[]){
+  if(p.user_id!==me.id)items.push({id:'teacher:'+p.id,page:'teacher',post:p.id,user:p.user_id,date:p.created_at,message:'shared in Teacher Corner: '+p.title});
+  for(const c of p.teacher_comments||[])if(c.user_id!==me.id&&p.user_id===me.id)items.push({id:'tcomment:'+c.id,page:'teacher',post:p.id,user:c.user_id,date:c.created_at,message:'commented on your Teacher Corner resource'});
+ }
  for(const p of data||[]){
-  if(prefs.loop&&p.user_id!==me.id)items.push({id:'post:'+p.id,post:p.id,user:p.user_id,date:p.created_at,message:'shared a post in The Loop'});
-  for(const c of p.loop_comments||[])if(prefs.loop&&c.user_id!==me.id&&(p.user_id===me.id||(p.loop_comments||[]).some(x=>x.user_id===me.id)))items.push({id:'comment:'+c.id,post:p.id,user:c.user_id,date:c.created_at,message:'commented on a post you follow'});
-  for(const x of p.loop_reactions||[])if(prefs.loop&&x.user_id!==me.id&&p.user_id===me.id)items.push({id:'reaction:'+x.id,post:p.id,user:x.user_id,date:x.created_at||p.created_at,message:x.reaction==='like'?'liked your post':'reacted to your post ❤️'});
+  if((prefs.loop||prefs.projects)&&p.user_id!==me.id&&(prefs.projects||!p.body?.startsWith('🎨 CRAFT PROJECT:')))items.push({page:'sisters',id:'post:'+p.id,post:p.id,user:p.user_id,date:p.created_at,message:'shared a post in The Loop'});
+  for(const c of p.loop_comments||[])if(prefs.loop&&c.user_id!==me.id&&(p.user_id===me.id||(p.loop_comments||[]).some(x=>x.user_id===me.id)))items.push({page:'sisters',id:'comment:'+c.id,post:p.id,user:c.user_id,date:c.created_at,message:'commented on a post you follow'});
+  for(const x of p.loop_reactions||[])if(prefs.loop&&x.user_id!==me.id&&p.user_id===me.id)items.push({page:'sisters',id:'reaction:'+x.id,post:p.id,user:x.user_id,date:x.created_at||p.created_at,message:x.reaction==='like'?'liked your post':'reacted to your post ❤️'});
  }
  notificationItems=items.sort((a,b)=>new Date(b.date)-new Date(a.date)).filter(x=>!notificationSeen().has(x.id)||Date.now()-new Date(x.date).getTime()<7*86400000).slice(0,100);
  const seen=notificationSeen(),count=notificationItems.filter(x=>!seen.has(x.id)).length;
@@ -65,7 +77,7 @@ async function loadNotifications(){
 }
 function renderNotifications(){
  const list=$('#notification-list'),seen=notificationSeen();
- list.innerHTML=notificationItems.length?notificationItems.map(x=>'<button type="button" class="notification-item" data-notification-id="'+esc(x.id)+'" data-post-id="'+esc(x.post)+'" style="display:block;width:100%;padding:15px;text-align:left;background:'+(seen.has(x.id)?'#fff':'#fff0f6')+';border:1px solid #eee5ed;border-radius:16px;margin:8px 0"><strong>'+esc(profileFor(x.user).display_name)+'</strong> '+esc(x.message)+'<small style="display:block;color:#786d80;margin-top:5px">'+new Date(x.date).toLocaleString()+'</small>'+(seen.has(x.id)?'<span style="display:block;margin-top:8px;color:#776b78">✓ Read</span>':'<span role="button" tabindex="0" data-mark-read="'+esc(x.id)+'" style="display:inline-block;margin-top:8px;padding:7px 11px;border-radius:10px;background:#f6dce9;color:#74334d;font-weight:700">✓ Mark as read</span>')+'</button>').join(''):'<div class="empty-card">No notifications yet 💕</div>';
+ list.innerHTML=notificationItems.length?notificationItems.map(x=>'<button type="button" class="notification-item" data-notification-id="'+esc(x.id)+'" data-post-id="'+esc(x.post)+'" data-page="'+esc(x.page||'sisters')+'" style="display:block;width:100%;padding:15px;text-align:left;background:'+(seen.has(x.id)?'#fff':'#fff0f6')+';border:1px solid #eee5ed;border-radius:16px;margin:8px 0"><strong>'+esc(profileFor(x.user).display_name)+'</strong> '+esc(x.message)+'<small style="display:block;color:#786d80;margin-top:5px">'+new Date(x.date).toLocaleString()+'</small>'+(seen.has(x.id)?'<span style="display:block;margin-top:8px;color:#776b78">✓ Read</span>':'<span role="button" tabindex="0" data-mark-read="'+esc(x.id)+'" style="display:inline-block;margin-top:8px;padding:7px 11px;border-radius:10px;background:#f6dce9;color:#74334d;font-weight:700">✓ Mark as read</span>')+'</button>').join(''):'<div class="empty-card">No notifications yet 💕</div>';
 }
 $('#open-notifications').onclick=async()=>{showPage('notifications');renderNotificationPrefs();await loadNotifications()};
 $('#notifications-back').onclick=()=>showPage('sisters');$('#notifications-mark-all').onclick=()=>{const seen=notificationSeen();notificationItems.forEach(x=>seen.add(x.id));saveNotificationSeen(seen);renderNotifications();$('#notification-count').textContent='';setDot(false);syncHomeBadge(0);};
@@ -75,7 +87,7 @@ $('#notification-list').onclick=async e=>{
 
  const b=e.target.closest('[data-notification-id]');if(!b)return;
  const seen=notificationSeen();seen.add(b.dataset.notificationId);saveNotificationSeen(seen);
- showPage('sisters');await loadLoop();
+ showPage(b.dataset.page==='kitchen'?'kitchen':b.dataset.page==='teacher'?'teacher':'sisters');if(!b.dataset.page||b.dataset.page==='sisters')await loadLoop();
  const card=[...document.querySelectorAll('.loop-post')].find(x=>x.dataset.post===b.dataset.postId);
  if(card){card.scrollIntoView({behavior:'smooth',block:'center'});card.style.outline='3px solid #e8a1c4';setTimeout(()=>card.style.outline='',2500)}
  loadNotifications();
