@@ -1,4 +1,5 @@
 import {createClient} from '@supabase/supabase-js';
+import {verifyFamilyMember,membershipError} from '../lib/family-auth.js';
 const url=process.env.SUPABASE_URL;
 const service=process.env.SUPABASE_SECRET_KEY||process.env.SUPABASE_SERVICE_ROLE_KEY;
 export default async function handler(req,res){
@@ -9,6 +10,8 @@ export default async function handler(req,res){
  const db=createClient(url,service,{auth:{persistSession:false}});
  const {data:{user},error}=await db.auth.getUser(token);
  if(error||!user)return res.status(401).json({error:'Invalid session'});
+ const family=await verifyFamilyMember(db,user,token);
+ if(!family.ok)return membershipError(res,family);
  const {subscription,endpoint}=req.body||{};
  const target=subscription?.endpoint||endpoint;
  if(typeof target!=='string'||!target.startsWith('https://')||target.length>2048)return res.status(400).json({error:'Invalid subscription'});
