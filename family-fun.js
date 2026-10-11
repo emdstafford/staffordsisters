@@ -4,6 +4,18 @@ export function initFamilyFun({getMe}){
  const $=s=>document.querySelector(s);
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const WATCH_KEY='stafford-sisters-tv-watchlist-v1';
+ // These are public videos uploaded by their original rightsholders, not copies
+ // or redistributed TV/movie files. Only curated URLs can be embedded.
+ const freeVideos=[
+  {id:'aqz-KE-bpKQ',title:'Big Buck Bunny',kind:'movie',badge:'Animated short movie · 10 min',by:'Blender Foundation',note:'A funny forest adventure starring a giant bunny 🐰',emoji:'🐰'},
+  {id:'5XpyVz5Bb7c',title:'Wild Kratts: Outfoxed',kind:'show',badge:'Full TV episode',by:'PBS KIDS',note:'Discover the clever, athletic red fox 🦊',emoji:'🦊'},
+  {id:'Rx944HSeTH4',title:'Odd Squad: O Games',kind:'show',badge:'Full TV episode',by:'PBS KIDS',note:'An Olympic-style contest at Odd Squad 🏆',emoji:'🏆'},
+  {id:'FiB6puNl8LQ',title:'Odd Squad: Welcome to Odd Squad',kind:'show',badge:'Full TV episode',by:'PBS KIDS',note:'A strange adventure for new agents 🕵️',emoji:'🕵️'},
+  {id:'wr6kgCJim9k',title:'Molly of Denali: Mother’s Day Mission',kind:'show',badge:'Full TV episode',by:'PBS KIDS',note:'A surprise, an adventure, and a talking bird 🦜',emoji:'🌷'},
+  {id:'DigGOlWCZnM',title:'Molly of Denali: Truth, Trust, and Harvest',kind:'show',badge:'Full TV episode',by:'PBS KIDS',note:'Friends help make a community garden 🪴',emoji:'🌿'},
+  {id:'QVRI1quOPXs',title:'Wild Kratts: No Color, No Fun',kind:'show',badge:'Official TV clip',by:'PBS KIDS',note:'Creature power and a very strange color problem 🎨',emoji:'🎨'}
+ ];
+ let videoFilter='all',playingVideo=null;
  const suggestions=[
   {title:'Alexa & Katie',type:'show',emoji:'🎭',note:'A funny, heartfelt friendship series'},
   {title:'Erin & Aaron',type:'show',emoji:'🎤',note:'Music, family and a little friendly competition'},
@@ -119,6 +131,82 @@ export function initFamilyFun({getMe}){
   const x=pool[Math.floor(Math.random()*pool.length)];
   result.textContent='🍿 Tonight’s pick: '+x.title+'!';
  };
+
+ function renderFreeVideos(){
+  const library=$('#tv-video-library');
+  if(!library)return;
+  const selection=freeVideos.filter(x=>videoFilter==='all'||x.kind===videoFilter);
+  library.innerHTML=selection.map(video=>{
+   const thumb='https://i.ytimg.com/vi/'+video.id+'/hqdefault.jpg';
+   return '<article class="fun-video-card" data-video-id="'+esc(video.id)+'">'+
+    '<button class="fun-video-poster" type="button" data-watch-video="'+esc(video.id)+'" aria-label="Watch '+esc(video.title)+' inside Stafford Sisters">'+
+     '<img alt="" loading="lazy" src="'+thumb+'">'+
+     '<span class="fun-video-play" aria-hidden="true">▶</span>'+
+     '<span class="fun-video-badge">'+esc(video.badge)+'</span></button>'+
+    '<div class="fun-video-card-info"><small>'+esc(video.by)+'</small>'+
+     '<h4>'+esc(video.title)+'</h4><p>'+esc(video.note)+'</p>'+
+     '<div class="fun-video-card-actions">'+
+      '<button class="fun-primary" type="button" data-watch-video="'+esc(video.id)+'">▶ Watch now</button>'+
+      '<button class="fun-button" type="button" data-save-video="'+esc(video.id)+'">＋ List</button>'+
+     '</div></div></article>';
+  }).join('');
+  $('#tv-video-filter button').forEach(b=>{
+   b.classList.toggle('active',b.dataset.videoFilter===videoFilter);
+   b.setAttribute('aria-pressed',String(b.dataset.videoFilter===videoFilter));
+  });
+ }
+ const player=$('#tv-player-modal'),videoFrame=$('#tv-player-frame');
+ function openPlayer(video){
+  if(!video)return;
+  closePlayer();
+  playingVideo=video;
+  $('#tv-player-title').textContent=video.title;
+  $('#tv-player-caption').textContent=video.badge+' · '+video.by+' — '+video.note;
+  $('#tv-player-source').href='https://www.youtube.com/watch?v='+video.id;
+  $('#tv-player-save').textContent=tvItems.some(x=>x.title===video.title)?'✓ On your watchlist':'♡ Save to watchlist';
+  player.hidden=false;
+  const frame=document.createElement('iframe');
+  frame.title='Watch '+video.title;
+  frame.loading='eager';
+  frame.src='https://www.youtube-nocookie.com/embed/'+video.id+'?playsinline=1&rel=0';
+  frame.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen';
+  frame.allowFullscreen=true;
+  frame.referrerPolicy='strict-origin-when-cross-origin';
+  videoFrame.replaceChildren(frame);
+  player.querySelector('#tv-player-close').focus();
+  document.body.classList.add('fun-video-open');
+ }
+ function closePlayer(){
+  if(player)player.hidden=true;
+  if(videoFrame)videoFrame.replaceChildren();
+  document.body.classList.remove('fun-video-open');
+  playingVideo=null;
+ }
+ $('#tv-video-filter').onclick=e=>{
+  const b=e.target.closest('[data-video-filter]');
+  if(!b)return;
+  videoFilter=b.dataset.videoFilter;
+  renderFreeVideos();
+ };
+ $('#tv-video-library').onclick=e=>{
+  const b=e.target.closest('[data-watch-video],[data-save-video]');
+  if(!b)return;
+  const id=b.dataset.watchVideo||b.dataset.saveVideo;
+  const video=freeVideos.find(v=>v.id===id);
+  if(!video)return;
+  if(b.hasAttribute('data-save-video'))addItem(video.title,video.kind==='movie'?'movie':'show');
+  else openPlayer(video);
+ };
+ $('#tv-player-close').onclick=closePlayer;
+ player.addEventListener('click',e=>{if(e.target===player)closePlayer()});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!player.hidden)closePlayer()});
+ document.addEventListener('visibilitychange',()=>{if(document.hidden)closePlayer()});
+ $('#tv-player-save').onclick=()=>{
+  if(!playingVideo)return;
+  addItem(playingVideo.title,playingVideo.kind==='movie'?'movie':'show');
+  $('#tv-player-save').textContent='✓ On your watchlist';
+ };
+
  const gameStart=$('#games-start'),gamePlay=$('#games-play'),gameResult=$('#games-result');
  function startQuiz(which){
   category=which;questionIndex=0;score=0;answered=false;
@@ -180,6 +268,6 @@ export function initFamilyFun({getMe}){
  $('#games-either-a').onclick=()=>chooseEither(0);
  $('#games-either-b').onclick=()=>chooseEither(1);
  $('#games-either-restart').onclick=()=>{eitherIndex=0;choices=[];renderEither()};
- renderEither();renderTV();
- return {showTV:renderTV,showGames:()=>{}};
+ renderEither();renderTV();renderFreeVideos();
+ return {showTV:()=>{renderTV();renderFreeVideos()},showGames:()=>{},closePlayer};
 }
