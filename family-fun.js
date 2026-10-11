@@ -7,6 +7,11 @@ export function initFamilyFun({getMe}){
  // These are public videos uploaded by their original rightsholders, not copies
  // or redistributed TV/movie files. Only curated URLs can be embedded.
  const freeVideos=[
+  // Official free promotional clips: these are NOT full episodes.
+  {id:'viREx7NlYxU',title:'Erin & Aaron: First 5 Minutes',kind:'clip',badge:'Official first-episode preview · 5 min',by:'Nickelodeon',note:'Meet Erin and Aaron in the opening minutes of the show! 🎵',emoji:'🎸',favorite:true},
+  {id:'7MEFbjTTeHo',title:'Erin & Aaron: It’s You',kind:'clip',badge:'Official music scene',by:'Nickelodeon',note:'Erin sings for Aaron and reminds him to be himself. 🎤',emoji:'🎶',favorite:true},
+  {id:'AN-Wmg8ByVI',title:'Alexa & Katie: Season 2 Trailer',kind:'clip',badge:'Official trailer · 2 min',by:'Netflix',note:'The best friends face a new school year together. 💕',emoji:'👭',favorite:true},
+  {id:'LNfPTituYWg',title:'Alexa & Katie: Season 3 Trailer',kind:'clip',badge:'Official trailer · 2 min',by:'Netflix Family',note:'A sneak peek at Alexa and Katie’s junior year! ✨',emoji:'🌸',favorite:true},
   {id:'aqz-KE-bpKQ',title:'Big Buck Bunny',kind:'movie',badge:'Animated short movie · 10 min',by:'Blender Foundation',note:'A funny forest adventure starring a giant bunny 🐰',emoji:'🐰'},
   {id:'5XpyVz5Bb7c',title:'Wild Kratts: Outfoxed',kind:'show',badge:'Full TV episode',by:'PBS KIDS',note:'Discover the clever, athletic red fox 🦊',emoji:'🦊'},
   {id:'Rx944HSeTH4',title:'Odd Squad: O Games',kind:'show',badge:'Full TV episode',by:'PBS KIDS',note:'An Olympic-style contest at Odd Squad 🏆',emoji:'🏆'},
@@ -17,12 +22,12 @@ export function initFamilyFun({getMe}){
  ];
  let videoFilter='all',playingVideo=null;
  const suggestions=[
-  {title:'Big Buck Bunny',type:'movie',emoji:'🐰',note:'A free animated short movie'},
-  {title:'Wild Kratts: Outfoxed',type:'show',emoji:'🦊',note:'Creature adventures from PBS KIDS'},
-  {title:'Odd Squad: O Games',type:'show',emoji:'🏆',note:'Free Odd Squad episode'},
-  {title:'Molly of Denali: Mother’s Day Mission',type:'show',emoji:'🌷',note:'Free family-friendly episode'},
-  {title:'Odd Squad: Welcome to Odd Squad',type:'show',emoji:'🕵️',note:'Funny math mysteries'},
-  {title:'Molly of Denali: Truth, Trust, and Harvest',type:'show',emoji:'🌿',note:'Friends and community adventures'}
+  {title:'Erin & Aaron: First 5 Minutes',type:'show',emoji:'🎸',note:'Free official sneak peek — not a full episode'},
+  {title:'Erin & Aaron: It’s You',type:'show',emoji:'🎶',note:'Free official music scene'},
+  {title:'Alexa & Katie: Season 2 Trailer',type:'show',emoji:'👭',note:'Free official trailer — not a full episode'},
+  {title:'Alexa & Katie: Season 3 Trailer',type:'show',emoji:'🌸',note:'Free official trailer — not a full episode'},
+  {title:'Big Buck Bunny',type:'movie',emoji:'🐰',note:'A complete free animated short movie'},
+  {title:'Wild Kratts: Outfoxed',type:'show',emoji:'🦊',note:'Free full episode'}
  ];
  const quizzes={
   mixed:[
@@ -137,7 +142,7 @@ export function initFamilyFun({getMe}){
  function renderFreeVideos(){
   const library=$('#tv-video-library');
   if(!library)return;
-  const selection=freeVideos.filter(x=>videoFilter==='all'||x.kind===videoFilter);
+  const selection=freeVideos.filter(x=>videoFilter==='all'||(videoFilter==='favorites'?x.favorite:x.kind===videoFilter));
   library.innerHTML=selection.map(video=>{
    const thumb='https://i.ytimg.com/vi/'+video.id+'/hqdefault.jpg';
    return '<article class="fun-video-card" data-video-id="'+esc(video.id)+'">'+
