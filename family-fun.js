@@ -93,6 +93,7 @@ export function initFamilyFun({getMe}){
   root.innerHTML=view.length?view.map(x=>'<div class="fun-watch-item" data-watch-id="'+esc(x.id)+'">'+
    '<span class="fun-watch-icon">'+(x.type==='movie'?'🎬':'📺')+'</span>'+
    '<div class="fun-watch-info"><strong>'+esc(x.title)+'</strong><small>'+esc(x.type==='movie'?'Movie':'TV show')+' · '+(x.watched?'Watched ✅':'Want to watch 🍿')+'</small></div>'+
+   (freeVideos.some(v=>v.title.toLowerCase()===x.title.toLowerCase())?'<button type="button" data-watch-play="'+esc(x.id)+'" aria-label="Play '+esc(x.title)+'">▶</button>':'')+
    '<button type="button" data-watch-toggle="'+esc(x.id)+'" aria-label="'+(x.watched?'Mark unwatched':'Mark watched')+'">'+(x.watched?'↩':'✓')+'</button>'+
    '<button type="button" data-watch-remove="'+esc(x.id)+'" aria-label="Remove '+esc(x.title)+'">×</button></div>').join(''):
    '<div class="fun-empty">'+(tvFilter==='all'?'Your list is waiting! Add something above or try a recommendation.':'Nothing in this section yet!')+'</div>';
@@ -117,9 +118,10 @@ export function initFamilyFun({getMe}){
   tvFilter=b.dataset.filter;renderTV();
  };
  $('#tv-watchlist').onclick=e=>{
-  const b=e.target.closest('[data-watch-toggle],[data-watch-remove]');if(!b)return;
-  const id=b.dataset.watchToggle||b.dataset.watchRemove,x=tvItems.find(x=>x.id===id);
+  const b=e.target.closest('[data-watch-toggle],[data-watch-remove],[data-watch-play]');if(!b)return;
+  const id=b.dataset.watchToggle||b.dataset.watchRemove||b.dataset.watchPlay,x=tvItems.find(x=>x.id===id);
   if(!x)return;
+  if(b.hasAttribute('data-watch-play')){openPlayer(freeVideos.find(v=>v.title.toLowerCase()===x.title.toLowerCase()));return}
   if(b.hasAttribute('data-watch-toggle')){x.watched=!x.watched;tvStatus(x.watched?'Marked as watched! ✅':'Back on your watchlist!')}
   else{tvItems=tvItems.filter(t=>t.id!==id);tvStatus('Removed from this device’s list.')}
   saveItems();renderTV();
