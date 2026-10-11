@@ -268,6 +268,32 @@
   <h2>Stafford Sisters TV 📺💕</h2>
   <p>Find something fun to watch, save your favorites, and let the family movie-night picker choose tonight's show!</p>
  </div>
+ <section class="fun-watch-now" aria-labelledby="tv-watch-heading">
+  <div class="fun-watch-head">
+   <div><span class="fun-kicker">PRESS PLAY</span><h3 id="tv-watch-heading">▶ Watch right here!</h3></div>
+   <span class="fun-watch-free">FREE VIDEOS</span>
+  </div>
+  <p>Real episodes and animated short movies from official video channels. Tap a picture to watch inside Stafford Sisters! 💜</p>
+  <div id="tv-video-filter" class="fun-filter-row" role="group" aria-label="Filter videos">
+   <button type="button" data-video-filter="all" class="active" aria-pressed="true">✨ All</button>
+   <button type="button" data-video-filter="show" aria-pressed="false">📺 TV episodes</button>
+   <button type="button" data-video-filter="movie" aria-pressed="false">🎬 Short movies</button>
+  </div>
+  <div id="tv-video-library" class="fun-video-library" aria-live="polite"></div>
+  <p class="fun-note">Videos play using the publisher's official YouTube player. Availability and ads are controlled by YouTube, not Stafford Sisters.</p>
+ </section>
+ <section class="fun-panel fun-streaming-links" aria-label="More free and subscription TV">
+  <h3>🌟 More shows & movies</h3>
+  <p>Want more episodes or a full-length movie? These trusted services have bigger libraries. They open in their own websites or apps.</p>
+  <div class="fun-service-links">
+   <a href="https://pbskids.org/videos" target="_blank" rel="noopener noreferrer"><strong>🦋 PBS KIDS</strong><small>Free full episodes ↗</small></a>
+   <a href="https://tubitv.com/" target="_blank" rel="noopener noreferrer"><strong>🎥 Tubi</strong><small>Free movies & shows ↗</small></a>
+   <a href="https://pluto.tv/" target="_blank" rel="noopener noreferrer"><strong>⭐ Pluto TV</strong><small>Free channels & movies ↗</small></a>
+   <a href="https://www.netflix.com/" target="_blank" rel="noopener noreferrer"><strong>🍿 Netflix</strong><small>Subscription required ↗</small></a>
+   <a href="https://www.disneyplus.com/" target="_blank" rel="noopener noreferrer"><strong>✨ Disney+</strong><small>Subscription required ↗</small></a>
+  </div>
+  <p class="fun-note">Streaming websites set their own age ratings and viewing rules. Ask an adult before opening a new service.</p>
+ </section>
  <div class="fun-panel">
   <h3>🍿 What should we watch?</h3>
   <p>Add a show or movie to your watchlist. You can mark things watched or remove them anytime.</p>
@@ -301,6 +327,21 @@
   <button id="tv-pick-tonight" class="fun-primary" type="button">🎬 Pick for tonight!</button>
   <div class="fun-picker-result" id="tv-picked" role="status">Ready when you are! 🍿</div>
  </div>
+<div id="tv-player-modal" class="fun-player-modal" hidden>
+ <div class="fun-player-sheet" role="dialog" aria-modal="true" aria-labelledby="tv-player-title">
+  <div class="fun-player-head">
+   <div><small>📺 STAFFORD SISTERS TV</small><h3 id="tv-player-title">Now Playing</h3></div>
+   <button id="tv-player-close" type="button" aria-label="Close the video player">✕</button>
+  </div>
+  <div id="tv-player-frame" class="fun-player-frame" aria-label="Video player"></div>
+  <p id="tv-player-caption" class="fun-player-caption"></p>
+  <div class="fun-player-actions">
+   <button id="tv-player-save" type="button" class="fun-button">♡ Save to watchlist</button>
+   <a id="tv-player-source" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" class="fun-button">Open on YouTube ↗</a>
+  </div>
+  <p class="fun-note">If the video doesn't play here, use “Open on YouTube.” Closing this window stops playback.</p>
+ </div>
+</div>
 </section>
 <section class="page fun-page" id="games">
  <div class="fun-hero">
