@@ -1,203 +1,305 @@
-// Stafford Sisters Shorts: private family videos, photo shorts, and original musical loops.
-export function initShorts({supabase,getMe,profileFor,avatarMarkup,signedUrl,esc,ago,showPage,openProfile,pushDispatch=()=>{}}){
- const $=s=>document.querySelector(s);
+// Stafford Sisters Shorts: private full-screen, swipe-up family videos and photo galleries.
+export function initShorts({supabase,getMe,profileFor,avatarMarkup,esc,ago,openProfile,pushDispatch=()=>{}}){
+ const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
  const feed=$('#shorts-feed'),form=$('#shorts-form'),input=$('#shorts-file'),status=$('#shorts-status');
- let mediaFile=null,previewURL=null,items=[],busy=false,music=null;
+ const details=$('#shorts-create-details'),modal=$('#shorts-comments-modal');
+ let selectedFiles=[],previewUrls=[],items=[],busy=false,music=null,observer=null,activeId=null;
  const tunes={
   sunshine:{base:261.63,notes:[0,4,7,9,7,4,2,4,5,9,7,4,2,0],speed:290},
   starlight:{base:220,notes:[0,7,9,7,4,2,0,-3,0,4,7,4],speed:390},
   cozy:{base:196,notes:[0,2,4,7,4,2,0,-3,0,2,5,2],speed:350}
  };
- function message(txt,bad=false){status.textContent=txt;status.hidden=!txt;status.style.color=bad?'#a42d4f':'#60426f'}
+ const songNames={sunshine:'Sunshine',starlight:'Starlight',cozy:'Cozy'};
+ const isVideo=f=>/^video\//.test(f.type)||/\.(mov|mp4|webm)$/i.test(f.name);
+ const supported=f=>/^(image\/(jpeg|png|webp|heic|heif)|video\/(mp4|quicktime|webm))$/.test(f.type)||/\.(jpg|jpeg|png|webp|heic|heif|mp4|mov|webm)$/i.test(f.name);
+ function showStatus(message,isError=false){
+  status.textContent=message;status.hidden=!message;
+  status.style.color=isError?'#a12c51':'#426447';
+ }
+ async function api(method,payload){
+  const {data:{session}}=await supabase.auth.getSession();
+  if(!session)throw Error('Please sign in to Stafford Sisters again.');
+  let response;
+  try{
+   response=await fetch('/api/shorts',{
+    method,cache:'no-store',
+    headers:{Authorization:'Bearer '+session.access_token,...(method==='POST'?{'Content-Type':'application/json'}:{})},
+    ...(method==='POST'?{body:JSON.stringify(payload)}:{})
+   });
+  }catch{throw Error('Could not reach Stafford Sisters. Check your connection and try again.')}
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok)throw Error(data.error||('Shorts request failed ('+response.status+').'));
+  return data;
+ }
+ function resetMedia(){
+  selectedFiles=[];input.value='';
+  for(const url of previewUrls)URL.revokeObjectURL(url);
+  previewUrls=[];$('#shorts-preview').replaceChildren();$('#shorts-preview').hidden=true;
+  $('#shorts-file-name').textContent='';
+ }
+ async function videoDurationOK(file){
+  return await new Promise(resolve=>{
+   const v=document.createElement('video'),url=URL.createObjectURL(file);
+   let finished=false;
+   const finish=ok=>{
+    if(finished)return;finished=true;clearTimeout(timeout);
+    v.removeAttribute('src');v.load();URL.revokeObjectURL(url);
+    resolve(ok);
+   };
+   const timeout=setTimeout(()=>finish(false),12000);
+   v.preload='metadata';v.onloadedmetadata=()=>finish(Number.isFinite(v.duration)&&v.duration>0&&v.duration<=60);
+   v.onerror=()=>finish(false);v.src=url;
+  });
+ }
+ $('#shorts-pick-file').onclick=()=>input.click();
+ $('#shorts-remove-file').onclick=()=>{resetMedia();showStatus('')};
+ input.onchange=async()=>{
+  const files=[...input.files];resetMedia();
+  if(!files.length)return;
+  if(files.length>6){showStatus('Choose up to six pictures, or one short video.',true);return}
+  if(files.some(f=>!supported(f))){showStatus('Please choose JPG, PNG, WebP, HEIC, MP4, MOV, or WebM files.',true);return}
+  if(files.some(isVideo)&&(files.length!==1||!isVideo(files[0]))){
+   showStatus('Choose a single video or up to six pictures, not a mix.',true);return;
+  }
+  const total=files.reduce((sum,f)=>sum+f.size,0);
+  if(!total||total>50*1024*1024){showStatus('Please keep your whole Short under 50 MB.',true);return}
+  if(isVideo(files[0])){
+   showStatus('Checking that your video is 60 seconds or less…');
+   if(!(await videoDurationOK(files[0]))){showStatus('Please choose a playable video of 60 seconds or less.',true);return}
+  }
+  selectedFiles=files;
+  const preview=$('#shorts-preview');
+  preview.hidden=false;
+  for(const [idx,file] of files.entries()){
+   const url=URL.createObjectURL(file);previewUrls.push(url);
+   const wrap=document.createElement('div');wrap.className='shorts-preview-tile';
+   const element=document.createElement(isVideo(file)?'video':'img');
+   element.src=url;
+   if(isVideo(file)){element.controls=true;element.playsInline=true;element.preload='metadata';}
+   else element.alt='Selected photo '+(idx+1);
+   wrap.appendChild(element);
+   if(files.length>1){const count=document.createElement('span');count.textContent=String(idx+1);wrap.appendChild(count)}
+   preview.appendChild(wrap);
+  }
+  $('#shorts-file-name').textContent=files.length===1?files[0].name:files.length+' pictures selected';
+  showStatus(files.length===1?'Ready to post! 💕':'Your photo slideshow is ready! 💕');
+ };
  function stopMusic(){
-  if(!music)return;
-  clearInterval(music.timer);
-  music.ctx.close().catch(()=>{});
-  music=null;
-  document.querySelectorAll('.short-music-play').forEach(x=>x.textContent='♫ Play soundtrack');
-  $('#shorts-preview-music').textContent='♫ Preview soundtrack';
+  if(music){clearInterval(music.timer);music.ctx.close().catch(()=>{});music=null}
+  $$('.shorts-music-toggle,#shorts-preview-music').forEach(b=>{
+   b.textContent=b.id==='shorts-preview-music'?'♫ Preview music':'♫ '+(songNames[b.dataset.track]||'Music');
+  });
  }
  function playMusic(track,button){
   if(!tunes[track])return;
   if(music?.button===button){stopMusic();return}
   stopMusic();
-  const AudioContextClass=window.AudioContext||window.webkitAudioContext;
-  if(!AudioContextClass){message('Your device cannot preview music.',true);return}
-  const ctx=new AudioContextClass();ctx.resume().catch(()=>{});
-  let count=0;const tune=tunes[track];
-  const note=()=>{
+  const Audio=window.AudioContext||window.webkitAudioContext;
+  if(!Audio){showStatus('This phone cannot play the soundtrack.',true);return}
+  const ctx=new Audio();ctx.resume().catch(()=>{});
+  const tune=tunes[track];let n=0;
+  const play=()=>{
    if(ctx.state==='closed')return;
-   const osc=ctx.createOscillator(),vol=ctx.createGain(),now=ctx.currentTime;
-   osc.type='sine';osc.frequency.value=tune.base*Math.pow(2,tune.notes[count++%tune.notes.length]/12);
-   vol.gain.setValueAtTime(.0001,now);
-   vol.gain.exponentialRampToValueAtTime(.035,now+.022);
-   vol.gain.exponentialRampToValueAtTime(.0001,now+.25);
-   osc.connect(vol);vol.connect(ctx.destination);osc.start(now);osc.stop(now+.27);
+   const osc=ctx.createOscillator(),gain=ctx.createGain(),now=ctx.currentTime;
+   osc.type='sine';osc.frequency.value=tune.base*Math.pow(2,tune.notes[n++%tune.notes.length]/12);
+   gain.gain.setValueAtTime(.0001,now);
+   gain.gain.exponentialRampToValueAtTime(.032,now+.02);
+   gain.gain.exponentialRampToValueAtTime(.0001,now+.25);
+   osc.connect(gain);gain.connect(ctx.destination);osc.start(now);osc.stop(now+.26);
   };
-  note();music={ctx,timer:setInterval(note,tune.speed),button};button.textContent='♫ Stop soundtrack';
+  play();music={button,ctx,timer:setInterval(play,tune.speed)};
+  button.textContent='♫ Pause music';
  }
- function resetMedia(clearInput=true){
-  mediaFile=null;if(clearInput)input.value='';
-  if(previewURL)URL.revokeObjectURL(previewURL);
-  previewURL=null;$('#shorts-preview').hidden=true;$('#shorts-preview').innerHTML='';
-  $('#shorts-file-name').textContent='';
- }
- const isVideo=f=>f.type.startsWith('video/')||/\.(mov|mp4|webm)$/i.test(f.name);
- async function durationOK(file){
-  return new Promise(resolve=>{
-   const v=document.createElement('video'),url=URL.createObjectURL(file);
-   let finished=false;
-   const done=ok=>{if(finished)return;finished=true;URL.revokeObjectURL(url);v.removeAttribute('src');resolve(ok)};
-   v.preload='metadata';v.onloadedmetadata=()=>done(Number.isFinite(v.duration)&&v.duration>0&&v.duration<=60);
-   v.onerror=()=>done(false);
-   v.src=url;
-  });
- }
- $('#shorts-pick-file').onclick=()=>input.click();
- $('#shorts-remove-file').onclick=()=>{resetMedia();message('')};
- input.onchange=async()=>{
-  const file=input.files?.[0];
-  resetMedia(false);
-  if(!file)return;
-  const video=isVideo(file),image=file.type.startsWith('image/')||/\.(heic|heif)$/i.test(file.name);
-  if(!video&&!image){message('Please choose a picture or video.',true);return}
-  if(file.size>50*1024*1024){message('Please choose a file smaller than 50 MB.',true);return}
-  if(video){
-   message('Checking video length…');
-   if(!await durationOK(file)){message('Choose a playable video of 60 seconds or less.',true);return}
-  }
-  mediaFile=file;previewURL=URL.createObjectURL(file);
-  const display=document.createElement(video?'video':'img');display.src=previewURL;
-  if(video){display.controls=true;display.playsInline=true;display.preload='metadata'}else display.alt='Short preview';
-  $('#shorts-preview').replaceChildren(display);$('#shorts-preview').hidden=false;
-  $('#shorts-file-name').textContent=file.name;
-  message((video?'Video':'Picture')+' selected! You can tap Post Short below.');
- };
  $('#shorts-preview-music').onclick=e=>{
   const track=$('#shorts-track').value;
-  if(track==='none'){stopMusic();message('Choose a soundtrack to preview first.');return}
+  if(track==='none'){showStatus('Choose a soundtrack first.');return}
   playMusic(track,e.currentTarget);
  };
  $('#shorts-track').onchange=stopMusic;
+ details.addEventListener('toggle',()=>{if(!details.open){stopMusic();resetMedia();form.reset();showStatus('')}});
  form.onsubmit=async e=>{
-  e.preventDefault();const me=getMe();
-  if(!me){message('Please sign in first.',true);return}
-  const selected=mediaFile;
-  if(!selected){message('Choose a photo or video first. Wait until the preview appears before posting.',true);return}
-  const video=isVideo(selected),mediaType=video?'video':'image';
-  let ext=(selected.name.split('.').pop()||'').replace(/[^a-z0-9]/gi,'').toLowerCase();
-  if(!ext||ext.length>6)ext=video?'mp4':'jpg';
-  const mime=selected.type||(video?'video/mp4':ext==='heic'?'image/heic':ext==='heif'?'image/heif':'image/jpeg');
-  const path=me.id+'/short-'+Date.now()+'-'+Math.random().toString(36).slice(2,8)+'.'+ext;
-  const button=$('#shorts-submit');button.disabled=true;button.textContent='Uploading…';
-  message('Privately uploading your Short… Please keep Stafford Sisters open.');
+  e.preventDefault();
+  if(!getMe()){showStatus('Please sign in again.',true);return}
+  if(!selectedFiles.length){showStatus('Add a picture or short video first.',true);return}
+  const button=$('#shorts-submit'),files=[...selectedFiles],mediaType=isVideo(files[0])?'video':'image';
+  button.disabled=true;button.textContent='Posting…';
   try{
-   const uploaded=await supabase.storage.from('shorts-media').upload(path,selected,{contentType:mime,upsert:false});
-   if(uploaded.error)throw uploaded.error;
-   const {error}=await supabase.from('shorts').insert({
-    user_id:me.id,caption:$('#shorts-caption').value.trim(),
-    media_path:path,media_type:mediaType,music_track:$('#shorts-track').value
+   showStatus('Preparing your private Short…');
+   const result=await api('POST',{action:'prepare',files:files.map(f=>({name:f.name,size:f.size,type:f.type}))});
+   if(!result.uploads||result.uploads.length!==files.length)throw Error('The upload was not prepared. Try again.');
+   const paths=[];
+   for(const [i,file] of files.entries()){
+    showStatus('Uploading '+(i+1)+' of '+files.length+'… Please keep the app open.');
+    const info=result.uploads[i];
+    const upload=await supabase.storage.from('shorts-media')
+     .uploadToSignedUrl(info.path,info.token,file,{contentType:file.type||undefined});
+    if(upload.error)throw Error('Could not upload picture/video '+(i+1)+': '+upload.error.message);
+    paths.push(info.path);
+   }
+   showStatus('Saving your Short…');
+   await api('POST',{
+    action:'create',paths,mediaType,
+    caption:$('#shorts-caption').value.trim(),track:$('#shorts-track').value
    });
-   if(error){await supabase.storage.from('shorts-media').remove([path]);throw error}
-   pushDispatch();stopMusic();form.reset();resetMedia();message('Your Short is posted! 🎬💕');
-   await load();
-  }catch(err){
-   console.error('Short upload failed',err);
-   const detail=String(err?.message||'').trim();
-   const lower=detail.toLowerCase();
-   let help='Upload failed. Please try once more.';
-   if(/expired|jwt|unauthorized|token/.test(lower))help='Your sign-in may have expired. Sign out and back in, then retry.';
-   else if(/bucket not found|relation .* does not exist|schema cache|does not exist/.test(lower))help='Shorts database or storage setup is missing. Ask Mama to rerun the Shorts setup in Supabase.';
-   else if(/row.level security|policy|permission|forbidden|403/.test(lower))help='The Shorts storage permissions are blocking the upload. Ask Mama to check the Shorts Supabase setup.';
-   else if(/mime|content.type|not allowed|unsupported/.test(lower))help='This file type is not allowed. Try a JPG photo or MP4 video.';
-   else if(/size|large|413|maximum/.test(lower))help='This file is too large. Please try a smaller photo or video.';
-   message(help+(detail?' ('+detail.slice(0,160)+')':''),true);
-  }finally{button.disabled=false;button.textContent='🎬 Post Short'}
+   pushDispatch();
+   stopMusic();details.open=false;resetMedia();form.reset();
+   showStatus('');await load({top:true});
+  }catch(err){showStatus(err?.message||'Could not post your Short. Please retry.',true)}
+  finally{button.disabled=false;button.textContent='🎬 Post Short'}
  };
- async function load(){
-  if(!getMe()||busy)return;
-  busy=true;$('#shorts-loading').hidden=false;
-  try{
-   const {data,error}=await supabase.from('shorts').select(
-    'id,user_id,caption,media_path,media_type,music_track,created_at,shorts_reactions(id,user_id,reaction),shorts_comments(id,user_id,body,created_at)'
-   ).order('created_at',{ascending:false}).limit(100);
-   if(error)throw error;
-   items=await Promise.all((data||[]).map(async p=>({
-    ...p,media_url:await signedUrl('shorts-media',p.media_path),
-    shorts_comments:(p.shorts_comments||[]).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at))
-   })));
-   render();
-  }catch(err){
-   console.error('Shorts unavailable',err);
-   feed.innerHTML='<div class="empty-card"><strong>Shorts needs its database setup.</strong><small>Ask Mama to run the Shorts setup SQL in Supabase first. Your other family posts are safe.</small></div>';
-  }finally{busy=false;$('#shorts-loading').hidden=true}
+ function makeGallery(p){
+  if(!p.media?.length)return '<p class="shorts-unavailable">This Short could not load its picture or video.</p>';
+  if(p.media_type==='video'){
+   return '<video class="shorts-video" src="'+esc(p.media[0].url)+'" playsinline controls preload="metadata" aria-label="Family video Short"></video>';
+  }
+  return '<div class="shorts-gallery" aria-label="Swipe sideways to view pictures">'+p.media.map((m,i)=>
+   '<div class="shorts-photo-slide"><img src="'+esc(m.url)+'" alt="Picture '+(i+1)+' of '+p.media.length+'" loading="'+(i===0?'eager':'lazy')+'"></div>'
+  ).join('')+'</div>'+
+  (p.media.length>1?'<span class="shorts-photo-hint">‹ Swipe photos ›</span><span class="shorts-photo-count">1 / '+p.media.length+'</span>':'');
  }
  function render(){
+  if(!items.length){
+   feed.innerHTML='<div class="shorts-empty"><span>🎬</span><strong>Be the first to post a Short!</strong><p>Tap + Create at the top to share a picture or video.</p></div>';
+   return;
+  }
   const me=getMe();
-  if(!items.length){feed.innerHTML='<div class="empty-card">🎬<strong>Ready to make your first Short?</strong><small>Share a photo or a video with your family!</small></div>';return}
-  feed.innerHTML=items.map(p=>{
-   const author=profileFor(p.user_id),rs=p.shorts_reactions||[],cs=p.shorts_comments||[];
-   const own=rs.find(x=>x.user_id===me?.id);
-   const likes=rs.filter(x=>x.reaction==='like').length,loves=rs.filter(x=>x.reaction==='heart').length;
-   const media=p.media_url?(p.media_type==='video'
-    ?'<video class="shorts-media" src="'+esc(p.media_url)+'" preload="metadata" playsinline controls></video>'
-    :'<img class="shorts-media" src="'+esc(p.media_url)+'" loading="lazy" alt="Family Short">')
-    :'<p>Media is temporarily unavailable.</p>';
-   return '<article class="shorts-card" data-short="'+esc(p.id)+'">'+
-    '<div class="shorts-media-wrap">'+media+'</div><div class="shorts-body">'+
-    '<div class="shorts-author"><button type="button" class="profile-link" data-short-profile="'+esc(p.user_id)+'">'+avatarMarkup(author)+'</button>'+
-    '<button type="button" class="profile-name-link" data-short-profile="'+esc(p.user_id)+'">'+esc(author.display_name)+'</button>'+
-    '<small>'+esc(ago(p.created_at))+'</small>'+
-    (p.user_id===me?.id?'<button type="button" class="shorts-delete" data-short-delete="'+esc(p.id)+'" title="Delete your Short">🗑️</button>':'')+'</div>'+
-    (p.caption?'<p class="shorts-caption">'+esc(p.caption)+'</p>':'')+
-    (tunes[p.music_track]?'<button type="button" class="short-music-play" data-track="'+esc(p.music_track)+'">♫ Play soundtrack</button>':'')+
-    '<div class="shorts-reactions">'+
-    '<button type="button" data-short-react="like" class="'+(own?.reaction==='like'?'selected':'')+'">👍 '+likes+'</button>'+
-    '<button type="button" data-short-react="heart" class="'+(own?.reaction==='heart'?'selected':'')+'">❤️ '+loves+'</button>'+
-    '<span>💬 '+cs.length+'</span></div>'+
-    '<div class="shorts-comments">'+cs.map(c=>'<div class="shorts-comment"><strong>'+esc(profileFor(c.user_id).display_name)+'</strong> '+esc(c.body)+'</div>').join('')+'</div>'+
-    '<form class="shorts-comment-form"><input maxlength="1000" aria-label="Short comment" placeholder="Write a kind comment…" required><button type="submit">Post</button></form>'+
-    '</div></article>';
+  feed.innerHTML=items.map((p,i)=>{
+   const author=profileFor(p.user_id),reactions=p.shorts_reactions||[],comments=p.shorts_comments||[];
+   const mine=reactions.find(r=>r.user_id===me?.id);
+   const likes=reactions.filter(r=>r.reaction==='like').length;
+   const hearts=reactions.filter(r=>r.reaction==='heart').length;
+   return '<article class="shorts-reel" data-short="'+esc(p.id)+'" aria-label="Short '+(i+1)+' of '+items.length+'">'+
+    '<div class="shorts-reel-media">'+makeGallery(p)+'</div>'+
+    '<div class="shorts-reel-shadow"></div>'+
+    '<div class="shorts-overlay-bottom">'+
+     '<div class="shorts-user-row"><button type="button" class="shorts-avatar" data-short-profile="'+esc(p.user_id)+'" aria-label="View '+esc(author.display_name)+' profile">'+avatarMarkup(author)+'</button>'+
+      '<button type="button" class="shorts-username" data-short-profile="'+esc(p.user_id)+'">'+esc(author.display_name)+'</button>'+
+      '<small>'+esc(ago(p.created_at))+'</small></div>'+
+     (p.caption?'<p class="shorts-reel-caption">'+esc(p.caption)+'</p>':'')+
+     (songNames[p.music_track]?'<button type="button" class="shorts-music-toggle" data-track="'+esc(p.music_track)+'">♫ '+esc(songNames[p.music_track])+'</button>':'')+
+    '</div>'+
+    '<div class="shorts-overlay-side">'+
+     '<button type="button" class="shorts-side-button'+(mine?.reaction==='like'?' is-selected':'')+'" data-short-react="like" aria-label="Like Short"><span>👍</span><small>'+likes+'</small></button>'+
+     '<button type="button" class="shorts-side-button'+(mine?.reaction==='heart'?' is-selected':'')+'" data-short-react="heart" aria-label="Love Short"><span>❤️</span><small>'+hearts+'</small></button>'+
+     '<button type="button" class="shorts-side-button" data-short-comments aria-label="View comments"><span>💬</span><small>'+comments.length+'</small></button>'+
+     '<button type="button" class="shorts-side-button" data-short-share aria-label="Share with family"><span>↗</span><small>Share</small></button>'+
+     (p.user_id===me?.id?'<button type="button" class="shorts-side-button shorts-side-delete" data-short-delete aria-label="Delete your Short"><span>🗑️</span><small>Delete</small></button>':'')+
+    '</div>'+
+    (i===0?'<div class="shorts-up-hint">Swipe up for the next Short ↑</div>':'')+
+    '</article>';
   }).join('');
+  initObserver();
  }
+ function initObserver(){
+  observer?.disconnect();
+  observer=new IntersectionObserver(entries=>{
+   for(const entry of entries){
+    if(!entry.isIntersecting||entry.intersectionRatio<.6)continue;
+    const id=entry.target.dataset.short;
+    if(activeId!==id){activeId=id;stopMusic()}
+    $$('.shorts-video').forEach(video=>{
+     if(!entry.target.contains(video)&&!video.paused)video.pause();
+    });
+   }
+  },{root:feed,threshold:[.6]});
+  $$('.shorts-reel').forEach(card=>observer.observe(card));
+  $$('.shorts-gallery').forEach(gallery=>gallery.addEventListener('scroll',()=>{
+   const count=gallery.closest('.shorts-reel').querySelector('.shorts-photo-count');
+   if(count)count.textContent=(Math.round(gallery.scrollLeft/gallery.clientWidth)+1)+' / '+gallery.children.length;
+  },{passive:true}));
+ }
+ async function load(opts={}){
+  if(!getMe()||busy)return;
+  busy=true;$('#shorts-loading').hidden=false;
+  const oldTop=feed.scrollTop;
+  try{
+   const result=await api('GET');
+   items=result.shorts||[];
+   render();
+   feed.scrollTop=opts.top?0:oldTop;
+   if(opts.top)activeId=null;
+   const desired=new URLSearchParams(location.search).get('short');
+   if(desired){
+    const card=[...$$('.shorts-reel')].find(x=>x.dataset.short===desired);
+    if(card)card.scrollIntoView({block:'nearest'});
+   }
+  }catch(err){
+   feed.innerHTML='<div class="shorts-empty"><strong>Shorts could not load yet</strong><p>'+esc(err.message||'Please try again.')+'</p><button type="button" id="shorts-retry">Try again</button></div>';
+   $('#shorts-retry').onclick=()=>load();
+  }finally{busy=false;$('#shorts-loading').hidden=true}
+ }
+ function openComments(p){
+  const author=profileFor(p.user_id);
+  $('#shorts-comments-title').textContent='Comments · '+author.display_name;
+  $('#shorts-comments-list').innerHTML=(p.shorts_comments||[]).length?
+   p.shorts_comments.map(c=>'<p class="shorts-comment"><strong>'+esc(profileFor(c.user_id).display_name)+'</strong> '+esc(c.body)+'</p>').join(''):
+   '<p class="shorts-comment-empty">No comments yet! 💕</p>';
+  $('#shorts-comment-form').dataset.short=p.id;
+  $('#shorts-comment-input').value='';
+  modal.hidden=false;$('#shorts-comment-input').focus();
+ }
+ function closeComments(){modal.hidden=true}
+ $('#shorts-comments-close').onclick=closeComments;
+ modal.addEventListener('click',e=>{if(e.target===modal)closeComments()});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!modal.hidden)closeComments()});
+ $('#shorts-comment-form').onsubmit=async e=>{
+  e.preventDefault();
+  const id=e.currentTarget.dataset.short,field=$('#shorts-comment-input'),comment=field.value.trim(),button=$('#shorts-comment-submit');
+  if(!comment)return;button.disabled=true;
+  try{
+   await api('POST',{action:'comment',id,comment});
+   field.value='';pushDispatch();
+   const current=items.find(x=>x.id===id);
+   if(current){
+    current.shorts_comments.push({id:'pending-'+Date.now(),user_id:getMe().id,body:comment,created_at:new Date().toISOString()});
+    openComments(current);
+    const count=[...$$('.shorts-reel')].find(x=>x.dataset.short===id)?.querySelector('[data-short-comments] small');
+    if(count)count.textContent=current.shorts_comments.length;
+   }
+  }catch(err){alert(err.message||'Could not post your comment.')}
+  finally{button.disabled=false}
+ };
  feed.onclick=async e=>{
   const profile=e.target.closest('[data-short-profile]');
   if(profile){stopMusic();openProfile(profile.dataset.shortProfile);return}
-  const sound=e.target.closest('.short-music-play');
-  if(sound){playMusic(sound.dataset.track,sound);return}
-  const card=e.target.closest('[data-short]'),me=getMe();
-  if(!card||!me)return;
-  const id=card.dataset.short,short=items.find(x=>x.id===id);
-  const btn=e.target.closest('[data-short-react]');
-  if(btn){
-   const value=btn.dataset.shortReact,existing=short?.shorts_reactions?.find(x=>x.user_id===me.id);
-   let result;
-   if(existing?.reaction===value)result=await supabase.from('shorts_reactions').delete().eq('id',existing.id).eq('user_id',me.id);
-   else if(existing)result=await supabase.from('shorts_reactions').update({reaction:value}).eq('id',existing.id).eq('user_id',me.id);
-   else result=await supabase.from('shorts_reactions').insert({short_id:id,user_id:me.id,reaction:value});
-   if(result.error){alert('Could not save your reaction. Please try again.');return}
-   pushDispatch();await load();return;
+  const play=e.target.closest('.shorts-music-toggle');
+  if(play){playMusic(play.dataset.track,play);return}
+  const card=e.target.closest('.shorts-reel');
+  if(!card)return;
+  const id=card.dataset.short,post=items.find(x=>x.id===id);
+  if(!post)return;
+  const button=e.target.closest('[data-short-react]');
+  if(button){
+   button.disabled=true;
+   try{await api('POST',{action:'react',id,reaction:button.dataset.shortReact});pushDispatch();await load()}
+   catch(err){alert(err.message||'Could not save your reaction.')}
+   finally{button.disabled=false}
+   return;
+  }
+  if(e.target.closest('[data-short-comments]')){stopMusic();openComments(post);return}
+  if(e.target.closest('[data-short-share]')){
+   const link=new URL(location.pathname,location.origin);link.searchParams.set('short',id);
+   const text='See this private Stafford Sisters Short 💕';
+   try{
+    if(navigator.share)await navigator.share({title:'Stafford Sisters Short',text,url:link.href});
+    else if(navigator.clipboard){await navigator.clipboard.writeText(link.href);showToast('Private Short link copied! 💕')}
+    else showToast('Share this with your family: '+link.href);
+   }catch(err){if(err.name!=='AbortError')showToast('Could not share this Short.')}
+   return;
   }
   if(e.target.closest('[data-short-delete]')){
-   if(short?.user_id!==me.id||!confirm('Delete your Short? This cannot be undone.'))return;
-   const {data,error}=await supabase.from('shorts').delete().eq('id',id).eq('user_id',me.id).select('id');
-   if(error||!data?.length){alert('Could not delete this Short.');return}
-   await supabase.storage.from('shorts-media').remove([short.media_path]);
-   stopMusic();await load();
+   if(!confirm('Delete this Short and all its photos/videos? This cannot be undone.'))return;
+   try{await api('POST',{action:'delete',id});await load({top:true})}
+   catch(err){alert(err.message||'Could not delete your Short.')}
   }
  };
- feed.onsubmit=async e=>{
-  const form=e.target.closest('.shorts-comment-form');
-  if(!form)return;
-  e.preventDefault();
-  const card=form.closest('[data-short]'),me=getMe(),field=form.querySelector('input');
-  if(!me||!card||!field.value.trim())return;
-  const button=form.querySelector('button');button.disabled=true;
-  const {error}=await supabase.from('shorts_comments').insert({short_id:card.dataset.short,user_id:me.id,body:field.value.trim()});
-  button.disabled=false;
-  if(error){alert('Could not post comment. Please try again.');return}
-  field.value='';pushDispatch();await load();
- };
+ function showToast(text){
+  const toast=$('#shorts-toast');
+  toast.textContent=text;toast.hidden=false;
+  setTimeout(()=>{toast.hidden=true},3200);
+ }
+ $('#shorts-refresh').onclick=()=>load();
  document.addEventListener('visibilitychange',()=>{if(document.hidden)stopMusic()});
- return {load,stopMusic};
+ function stop(){stopMusic();$$('.shorts-video').forEach(v=>v.pause())}
+ return {load,stopMusic:stop};
 }
