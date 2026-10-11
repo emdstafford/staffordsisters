@@ -1,5 +1,5 @@
 // Stafford Sisters Shorts: private family videos, photo shorts, and original musical loops.
-export function initShorts({supabase,getMe,profileFor,avatarMarkup,signedUrl,esc,ago,showPage,openProfile}){
+export function initShorts({supabase,getMe,profileFor,avatarMarkup,signedUrl,esc,ago,showPage,openProfile,pushDispatch=()=>{}}){
  const $=s=>document.querySelector(s);
  const feed=$('#shorts-feed'),form=$('#shorts-form'),input=$('#shorts-file'),status=$('#shorts-status');
  let mediaFile=null,previewURL=null,items=[],busy=false,music=null;
@@ -99,7 +99,7 @@ export function initShorts({supabase,getMe,profileFor,avatarMarkup,signedUrl,esc
     media_path:path,media_type:mediaType,music_track:$('#shorts-track').value
    });
    if(error){await supabase.storage.from('shorts-media').remove([path]);throw error}
-   stopMusic();form.reset();resetMedia();message('Your Short is posted! 🎬💕');
+   pushDispatch();stopMusic();form.reset();resetMedia();message('Your Short is posted! 🎬💕');
    await load();
   }catch(err){
    console.error('Short upload failed',err);
@@ -176,7 +176,7 @@ export function initShorts({supabase,getMe,profileFor,avatarMarkup,signedUrl,esc
    else if(existing)result=await supabase.from('shorts_reactions').update({reaction:value}).eq('id',existing.id).eq('user_id',me.id);
    else result=await supabase.from('shorts_reactions').insert({short_id:id,user_id:me.id,reaction:value});
    if(result.error){alert('Could not save your reaction. Please try again.');return}
-   await load();return;
+   pushDispatch();await load();return;
   }
   if(e.target.closest('[data-short-delete]')){
    if(short?.user_id!==me.id||!confirm('Delete your Short? This cannot be undone.'))return;
@@ -196,7 +196,7 @@ export function initShorts({supabase,getMe,profileFor,avatarMarkup,signedUrl,esc
   const {error}=await supabase.from('shorts_comments').insert({short_id:card.dataset.short,user_id:me.id,body:field.value.trim()});
   button.disabled=false;
   if(error){alert('Could not post comment. Please try again.');return}
-  field.value='';await load();
+  field.value='';pushDispatch();await load();
  };
  document.addEventListener('visibilitychange',()=>{if(document.hidden)stopMusic()});
  return {load,stopMusic};
