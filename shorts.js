@@ -51,6 +51,7 @@ export function initShorts({supabase,getMe,profileFor,avatarMarkup,esc,ago,openP
    v.onerror=()=>finish(false);v.src=url;
   });
  }
+ $('#shorts-create-open').onclick=()=>{details.open=true};
  $('#shorts-pick-file').onclick=()=>input.click();
  $('#shorts-remove-file').onclick=()=>{resetMedia();showStatus('')};
  input.onchange=async()=>{
@@ -131,8 +132,10 @@ export function initShorts({supabase,getMe,profileFor,avatarMarkup,esc,ago,openP
    for(const [i,file] of files.entries()){
     showStatus('Uploading '+(i+1)+' of '+files.length+'… Please keep the app open.');
     const info=result.uploads[i];
+    const extension=file.name.split('.').pop().toLowerCase();
+    const defaultTypes={jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',webp:'image/webp',heic:'image/heic',heif:'image/heif',mp4:'video/mp4',mov:'video/quicktime',webm:'video/webm'};
     const upload=await supabase.storage.from('shorts-media')
-     .uploadToSignedUrl(info.path,info.token,file,{contentType:file.type||undefined});
+     .uploadToSignedUrl(info.path,info.token,file,{contentType:file.type&&file.type!=='application/octet-stream'?file.type:defaultTypes[extension]});
     if(upload.error)throw Error('Could not upload picture/video '+(i+1)+': '+upload.error.message);
     paths.push(info.path);
    }
