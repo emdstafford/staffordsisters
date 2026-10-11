@@ -6,7 +6,7 @@ self.addEventListener('push',event=>{
  event.waitUntil((async()=>{
   if(Number.isFinite(Number(data.unreadCount))&&data.unreadCount!==undefined){
    const count=Math.max(0,Number(data.unreadCount));
-   try{if(count&&self.registration.setAppBadge)await self.registration.setAppBadge(count);else if(self.registration.clearAppBadge)await self.registration.clearAppBadge()}catch{}
+   try{if(count&&self.navigator?.setAppBadge)await self.navigator.setAppBadge(count);else if(self.navigator?.clearAppBadge)await self.navigator.clearAppBadge()}catch{}
   }
   await self.registration.showNotification(data.title||'Stafford Sisters 💕',{
    body:data.body||'There is something new in The Loop.',
