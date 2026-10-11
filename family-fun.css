@@ -1,0 +1,141 @@
+/* Stafford Sisters Games + TV: light, colorful, mobile-friendly family activities. */
+.bottom-nav{
+ display:grid!important;grid-template-columns:repeat(9,minmax(0,1fr))!important;
+ justify-content:stretch!important;align-items:stretch!important;
+ gap:0!important;overflow:visible!important;
+ padding:7px 5px calc(7px + env(safe-area-inset-bottom))!important;
+ box-sizing:border-box!important;
+}
+.bottom-nav .nav-btn{
+ min-width:0!important;width:100%!important;max-width:none!important;
+ flex:none!important;padding:6px 0!important;gap:3px!important;
+ border-radius:12px;
+}
+.bottom-nav .nav-btn span{font-size:19px}
+.bottom-nav .nav-btn small{font-size:9px;letter-spacing:-.35px;white-space:nowrap}
+.bottom-nav .create-nav{position:relative;z-index:2}
+.bottom-nav .create-nav span{
+ width:40px!important;height:40px!important;margin-top:-22px;
+ font-size:28px!important;box-shadow:0 5px 15px #9d649b40;
+}
+.bottom-nav .create-nav small{font-weight:900!important}
+.bottom-nav .bell-wrap{width:23px!important;height:23px!important}
+@media(max-width:380px){
+ .bottom-nav{padding-left:3px!important;padding-right:3px!important}
+ .bottom-nav .nav-btn span{font-size:18px}
+ .bottom-nav .nav-btn small{font-size:8px}
+ .bottom-nav .create-nav span{width:38px!important;height:38px!important}
+}
+.fun-page{--fun-purple:#56315c;--fun-muted:#756776;color:#352a40;padding-bottom:35px!important}
+.fun-hero{
+ position:relative;overflow:hidden;border-radius:24px;
+ background:linear-gradient(135deg,#fff0f8,#efe8ff 58%,#e7f8ff);
+ border:1px solid #f1e1f0;padding:22px 20px;margin-bottom:18px;
+ box-shadow:0 7px 22px #50305412;
+}
+.fun-hero:before{
+ content:"✦";position:absolute;right:20px;top:0;font-size:90px;
+ color:#fff9;pointer-events:none;
+}
+.fun-kicker{font-size:11px;letter-spacing:1.2px;color:#9d5689;font-weight:900}
+.fun-hero h2{font-size:30px;margin:6px 0 7px;letter-spacing:-.8px}
+.fun-hero p{font-size:14px;line-height:1.55;margin:0;color:#735f79;max-width:480px}
+.fun-panel{
+ background:#fff;border:1px solid #eee4ed;border-radius:20px;
+ padding:17px;margin:14px 0;box-shadow:0 4px 14px #3823400a;
+}
+.fun-panel h3{font-size:19px;margin:0 0 9px}
+.fun-panel>p{font-size:13px;color:var(--fun-muted);line-height:1.45;margin:5px 0 13px}
+.fun-panel-title{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.fun-panel-title small{font-size:12px;color:var(--fun-muted)}
+.fun-primary{
+ background:#53365f;color:#fff;border:0;border-radius:13px;
+ font-size:14px;font-weight:900;padding:11px 17px;cursor:pointer;
+}
+.fun-button{
+ background:#f8eff9;color:#58355b;border:1px solid #ebd9e9;border-radius:13px;
+ font-weight:800;font-size:13px;padding:10px 14px;cursor:pointer;
+}
+.fun-primary:disabled,.fun-button:disabled{opacity:.55}
+.fun-form-row{display:flex;gap:9px;flex-wrap:wrap}
+.fun-form-row input,.fun-form-row select{
+ background:#fbf8fc;border:1px solid #e8dbe9;border-radius:12px;
+ padding:11px 12px;font-size:16px;min-width:0;
+}
+.fun-form-row input{flex:1 1 180px}
+.fun-form-row select{flex:0 1 112px}
+.fun-form-row button{flex:0 0 auto}
+.fun-note{font-size:12px!important;color:#827189!important}
+.fun-status{font-size:13px!important;color:#3f6545!important;min-height:17px;line-height:1.4!important}
+.fun-status[hidden]{display:none}
+.fun-status.fun-error{color:#a32d53!important}
+.fun-suggestion-grid{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px;
+}
+.fun-suggestion{
+ display:flex;flex-direction:column;align-items:flex-start;gap:6px;
+ border-radius:17px;padding:14px 12px;background:#fcf6fb;
+ border:1px solid #f0e6f0;min-width:0;
+}
+.fun-suggestion:nth-child(3n+2){background:#f3f3ff}
+.fun-suggestion:nth-child(3n){background:#f2fafa}
+.fun-suggestion-icon{font-size:27px}
+.fun-suggestion strong{font-size:14px;line-height:1.25}
+.fun-suggestion small{font-size:12px;color:#776b7a;line-height:1.35;min-height:32px}
+.fun-suggestion button{
+ background:white;border:1px solid #e1d0e7;border-radius:11px;
+ font-weight:800;padding:8px 10px;color:#684773;cursor:pointer;font-size:12px;margin-top:auto;
+}
+.fun-filter-row{display:flex;gap:7px;margin:14px 0;flex-wrap:wrap}
+.fun-filter-row button{
+ border:1px solid #e3d8e2;border-radius:999px;background:#faf6fb;
+ color:#624d64;padding:8px 12px;font-size:12px;font-weight:800;
+}
+.fun-filter-row button.active{background:#5a3664;color:#fff;border-color:#5a3664}
+.fun-watch-item{
+ display:flex;gap:10px;align-items:center;border-top:1px solid #f3edf2;
+ padding:12px 0;
+}
+.fun-watch-icon{font-size:24px;background:#f8ecf7;border-radius:13px;padding:10px}
+.fun-watch-info{display:flex;flex-direction:column;gap:5px;flex:1;min-width:0}
+.fun-watch-info strong{font-size:14px;overflow-wrap:anywhere}
+.fun-watch-info small{font-size:11px;color:#887789}
+.fun-watch-item button{
+ border:1px solid #e8dbe7;background:#fff8ff;border-radius:10px;
+ padding:8px 11px;color:#613865;font-weight:900;min-width:35px;
+}
+.fun-empty{
+ text-align:center;color:#85768a;background:#faf6fa;padding:23px 15px;
+ border:1px dashed #e8d9e6;border-radius:15px;line-height:1.45;font-size:13px;
+}
+.fun-picker-result{
+ background:#f0e7fc;border-radius:14px;padding:14px;margin-top:12px;
+ text-align:center;color:#50365a;font-weight:850;font-size:15px;
+}
+.fun-quiz-options{display:grid;gap:10px;margin-top:14px}
+.fun-quiz-options button{
+ text-align:left;background:linear-gradient(120deg,#fcf7fd,#f6effb);
+ color:#4d3d59;border:1px solid #e9ddef;padding:14px;border-radius:16px;
+ font-size:14px;font-weight:800;line-height:1.45;
+}
+.fun-quiz-options button.correct{background:#dff3e4;border-color:#81bc97}
+.fun-quiz-options button.incorrect{background:#ffe5ec;border-color:#ed9aab}
+.fun-quiz-options button:disabled{color:#5e5362;opacity:1}
+.fun-quiz-meta{display:flex;justify-content:space-between;font-size:13px;color:#7d6a84;font-weight:800;gap:8px}
+.fun-quiz-question{font-size:22px!important;line-height:1.35;margin:13px 0!important}
+.fun-quiz-feedback{min-height:42px;color:#5e4672;font-weight:750;font-size:14px;line-height:1.45}
+.fun-quiz-panel[hidden],.fun-result-panel[hidden],.fun-pick-start[hidden]{display:none}
+.fun-quiz-finish{text-align:center;padding:20px 10px}
+.fun-quiz-finish .fun-trophy{font-size:50px;display:block}
+.fun-quiz-finish strong{font-size:30px;display:block;margin:8px 0}
+.fun-either-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}
+.fun-either-actions button{
+ min-height:115px;padding:16px 12px;border:0;border-radius:17px;
+ background:linear-gradient(135deg,#f9e4f0,#edddfc);color:#583564;
+ font-size:17px;font-weight:900;line-height:1.4;
+}
+.fun-either-actions button:nth-child(2){background:linear-gradient(135deg,#e2f4fa,#d8e9ff)}
+.fun-either-progress{font-size:12px;color:#816e84;font-weight:800}
+@media(min-width:640px){
+ .fun-suggestion-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
