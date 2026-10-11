@@ -10,8 +10,8 @@ export function initFamilyFun({getMe}){
   // Official free promotional clips: these are NOT full episodes.
   {id:'viREx7NlYxU',title:'Erin & Aaron: First 5 Minutes',kind:'clip',badge:'Official first-episode preview · 5 min',by:'Nickelodeon',note:'Meet Erin and Aaron in the opening minutes of the show! 🎵',emoji:'🎸',favorite:true},
   {id:'7MEFbjTTeHo',title:'Erin & Aaron: It’s You',kind:'clip',badge:'Official music scene',by:'Nickelodeon',note:'Erin sings for Aaron and reminds him to be himself. 🎤',emoji:'🎶',favorite:true},
-  {id:'AN-Wmg8ByVI',title:'Alexa & Katie: Season 2 Trailer',kind:'clip',badge:'Official trailer · 2 min',by:'Netflix',note:'The best friends face a new school year together. 💕',emoji:'👭',favorite:true},
-  {id:'LNfPTituYWg',title:'Alexa & Katie: Season 3 Trailer',kind:'clip',badge:'Official trailer · 2 min',by:'Netflix Family',note:'A sneak peek at Alexa and Katie’s junior year! ✨',emoji:'🌸',favorite:true},
+  {id:'AN-Wmg8ByVI',title:'Alexa & Katie: Season 2 Trailer',kind:'clip',badge:'Official free trailer',by:'Netflix',note:'The best friends face a new school year together. 💕',emoji:'👭',favorite:true},
+  {id:'LNfPTituYWg',title:'Alexa & Katie: Season 3 Trailer',kind:'clip',badge:'Official free trailer',by:'Netflix Family',note:'A sneak peek at Alexa and Katie’s junior year! ✨',emoji:'🌸',favorite:true},
   {id:'aqz-KE-bpKQ',title:'Big Buck Bunny',kind:'movie',badge:'Animated short movie · 10 min',by:'Blender Foundation',note:'A funny forest adventure starring a giant bunny 🐰',emoji:'🐰'},
   {id:'5XpyVz5Bb7c',title:'Wild Kratts: Outfoxed',kind:'show',badge:'Full TV episode',by:'PBS KIDS',note:'Discover the clever, athletic red fox 🦊',emoji:'🦊'},
   {id:'Rx944HSeTH4',title:'Odd Squad: O Games',kind:'show',badge:'Full TV episode',by:'PBS KIDS',note:'An Olympic-style contest at Odd Squad 🏆',emoji:'🏆'},
@@ -20,7 +20,7 @@ export function initFamilyFun({getMe}){
   {id:'DigGOlWCZnM',title:'Molly of Denali: Truth, Trust, and Harvest',kind:'show',badge:'Full TV episode',by:'PBS KIDS',note:'Friends help make a community garden 🪴',emoji:'🌿'},
   {id:'QVRI1quOPXs',title:'Wild Kratts: No Color, No Fun',kind:'show',badge:'Official TV clip',by:'PBS KIDS',note:'Creature power and a very strange color problem 🎨',emoji:'🎨'}
  ];
- let videoFilter='all',playingVideo=null;
+ let videoFilter='favorites',playingVideo=null;
  const suggestions=[
   {title:'Erin & Aaron: First 5 Minutes',type:'show',emoji:'🎸',note:'Free official sneak peek — not a full episode'},
   {title:'Erin & Aaron: It’s You',type:'show',emoji:'🎶',note:'Free official music scene'},
