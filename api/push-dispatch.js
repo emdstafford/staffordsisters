@@ -1,5 +1,6 @@
 import {timingSafeEqual} from 'node:crypto';
 import {adminClient,dispatchPending,dailyMaintenance} from '../lib/push-core.js';
+import {verifyFamilyMember,membershipError} from '../lib/family-auth.js';
 
 const safeEqual=(a,b)=>{
  const x=Buffer.from(a||''),y=Buffer.from(b||'');
@@ -24,8 +25,8 @@ export default async function handler(req,res){
   if(!token)return res.status(401).json({error:'Sign in required'});
   const {data:{user},error}=await db.auth.getUser(token);
   if(error||!user)return res.status(401).json({error:'Invalid session'});
-  const {data:profile}=await db.from('family_profiles').select('user_id').eq('user_id',user.id).maybeSingle();
-  if(!profile)return res.status(403).json({error:'Family account required'});
+  const family=await verifyFamilyMember(db,user,token);
+  if(!family.ok)return membershipError(res,family);
   const push=await dispatchPending(db,{actorId:user.id,limit:30});
   return res.status(200).json({ok:true,push});
  }catch(e){
