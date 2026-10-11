@@ -82,7 +82,7 @@ export function initShorts({supabase,getMe,profileFor,avatarMarkup,signedUrl,esc
  form.onsubmit=async e=>{
   e.preventDefault();const me=getMe();
   if(!me){message('Please sign in first.',true);return}
-  const selected=mediaFile||input.files?.[0];
+  const selected=mediaFile;
   if(!selected){message('Choose a photo or video first. Wait until the preview appears before posting.',true);return}
   const video=isVideo(selected),mediaType=video?'video':'image';
   let ext=(selected.name.split('.').pop()||'').replace(/[^a-z0-9]/gi,'').toLowerCase();
