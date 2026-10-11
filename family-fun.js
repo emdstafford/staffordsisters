@@ -17,12 +17,12 @@ export function initFamilyFun({getMe}){
  ];
  let videoFilter='all',playingVideo=null;
  const suggestions=[
-  {title:'Alexa & Katie',type:'show',emoji:'🎭',note:'A funny, heartfelt friendship series'},
-  {title:'Erin & Aaron',type:'show',emoji:'🎤',note:'Music, family and a little friendly competition'},
-  {title:'The Great British Baking Show',type:'show',emoji:'🧁',note:'Cozy baking inspiration'},
-  {title:'Paddington 2',type:'movie',emoji:'🐻',note:'A sweet, funny family movie'},
-  {title:'The Muppet Movie',type:'movie',emoji:'🎶',note:'Silly songs and a classic adventure'},
-  {title:'Bluey',type:'show',emoji:'🐶',note:'Short episodes for everyone to enjoy'}
+  {title:'Big Buck Bunny',type:'movie',emoji:'🐰',note:'A free animated short movie'},
+  {title:'Wild Kratts: Outfoxed',type:'show',emoji:'🦊',note:'Creature adventures from PBS KIDS'},
+  {title:'Odd Squad: O Games',type:'show',emoji:'🏆',note:'Free Odd Squad episode'},
+  {title:'Molly of Denali: Mother’s Day Mission',type:'show',emoji:'🌷',note:'Free family-friendly episode'},
+  {title:'Odd Squad: Welcome to Odd Squad',type:'show',emoji:'🕵️',note:'Funny math mysteries'},
+  {title:'Molly of Denali: Truth, Trust, and Harvest',type:'show',emoji:'🌿',note:'Friends and community adventures'}
  ];
  const quizzes={
   mixed:[
