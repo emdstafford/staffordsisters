@@ -51,43 +51,213 @@
 .shorts-comment-form{display:flex;gap:7px;margin-top:11px}
 .shorts-comment-form input{min-width:0;flex:1;font:inherit;border:1px solid #e9dce8;border-radius:13px;background:#faf7fa;padding:10px}
 .shorts-comment-form button{background:#49354e;border:0;border-radius:12px;color:white;font-weight:750;padding:10px}
+
+/* Immersive private Shorts viewer: one full-height Short per vertical swipe. */
+#shorts.page{
+ position:relative;
+ height:calc(100% + 36px);
+ margin:-18px;
+ padding:0!important;
+ background:#100f14;
+ color:#fff;
+ overflow:hidden;
+ isolation:isolate;
+}
+#shorts .shorts-reel-header{
+ display:flex;align-items:center;justify-content:space-between;
+ position:absolute;inset:0 0 auto;z-index:7;
+ padding:calc(13px + env(safe-area-inset-top)*0) 15px 13px;
+ background:linear-gradient(#16111aaa,transparent);
+ pointer-events:none;
+}
+#shorts .shorts-reel-header button{pointer-events:auto}
+.shorts-header-title strong{font-size:23px;letter-spacing:-.5px}
+.shorts-header-title strong span{color:#ffc3df}
+.shorts-header-title small{display:block;color:#ffecf8;font-size:11px;margin-top:3px}
+.shorts-header-actions{display:flex;gap:8px;align-items:center}
+.shorts-header-actions button{
+ color:#fff;border:1px solid #ffffff50;background:#292332b8;border-radius:20px;
+ font-size:14px;padding:9px 13px;font-weight:850;
+}
+.shorts-header-actions button:first-child{font-size:22px;padding:6px 12px}
+#shorts-feed{
+ position:absolute;inset:0;display:block;overflow-y:auto;
+ scroll-snap-type:y mandatory;scroll-behavior:smooth;overscroll-behavior-y:contain;
+ -webkit-overflow-scrolling:touch;scrollbar-width:none;
+ background:#0f0c11;
+}
+#shorts-feed::-webkit-scrollbar{display:none}
+#shorts .shorts-reel{
+ display:block;position:relative;height:100%;min-height:100%;
+ scroll-snap-align:start;scroll-snap-stop:always;
+ background:#17141a;overflow:hidden;
+}
+#shorts .shorts-reel-media{position:absolute;inset:0;background:#09070b;display:flex;align-items:center;justify-content:center}
+#shorts .shorts-reel-media .shorts-video{display:block;width:100%;height:100%;max-height:none;object-fit:contain}
+#shorts .shorts-gallery{
+ width:100%;height:100%;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;
+ overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+}
+#shorts .shorts-gallery::-webkit-scrollbar{display:none}
+#shorts .shorts-photo-slide{min-width:100%;height:100%;flex:0 0 100%;scroll-snap-align:center;display:grid;place-items:center}
+#shorts .shorts-photo-slide img{height:100%;width:100%;max-height:none;object-fit:contain}
+#shorts .shorts-reel-shadow{
+ position:absolute;inset:0;pointer-events:none;
+ background:linear-gradient(to bottom,#00000030 0%,transparent 28%,transparent 52%,#000000b6 100%);
+}
+#shorts .shorts-overlay-bottom{
+ position:absolute;bottom:39px;left:15px;right:85px;z-index:3;
+ text-shadow:0 1px 4px #000c;pointer-events:none;
+}
+#shorts .shorts-overlay-bottom button{pointer-events:auto}
+#shorts .shorts-user-row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+#shorts .shorts-avatar,#shorts .shorts-username{background:none;border:0;color:white;cursor:pointer;padding:0}
+#shorts .shorts-username{font:inherit;font-weight:900;font-size:17px;text-align:left}
+#shorts .shorts-user-row small{font-size:11px;color:#fff8}
+#shorts .shorts-avatar .mini-avatar{
+ width:37px;height:37px;display:grid;place-items:center;border:2px solid white;
+ border-radius:50%;overflow:hidden;background:#ffe1ef;color:#4b2c42;font-size:14px;
+}
+#shorts .shorts-avatar .mini-avatar img{width:100%;height:100%;object-fit:cover}
+#shorts .shorts-reel-caption{font-size:14px;line-height:1.35;margin:7px 0 9px;white-space:pre-wrap;overflow-wrap:anywhere;max-height:6.8em;overflow-y:auto}
+#shorts .shorts-music-toggle{
+ color:#fff;background:#3e364899;border:1px solid #ffffff55;
+ border-radius:20px;padding:8px 11px;font-size:12px;font-weight:850;
+ text-shadow:0 1px 3px #0009;
+}
+#shorts .shorts-overlay-side{
+ position:absolute;bottom:52px;right:8px;z-index:3;
+ display:flex;flex-direction:column;align-items:center;gap:10px;
+}
+#shorts .shorts-side-button{
+ width:64px;border:0;background:transparent;color:#fff;display:grid;justify-items:center;gap:2px;
+ padding:6px 2px;cursor:pointer;text-shadow:0 1px 4px #000b;
+}
+#shorts .shorts-side-button span{font-size:30px;line-height:1.2}
+#shorts .shorts-side-button small{font-weight:850;font-size:12px}
+#shorts .shorts-side-button.is-selected span{filter:drop-shadow(0 0 7px #ff8bc5)}
+#shorts .shorts-side-delete span{font-size:23px}
+#shorts .shorts-photo-hint,#shorts .shorts-photo-count{
+ position:absolute;z-index:3;font-size:12px;padding:6px 10px;
+ border-radius:14px;background:#1c142ca3;pointer-events:none;top:72px;
+}
+#shorts .shorts-photo-hint{left:14px}
+#shorts .shorts-photo-count{right:14px}
+#shorts .shorts-up-hint{
+ position:absolute;bottom:8px;left:0;right:0;text-align:center;font-size:11px;
+ color:#ffeffb;pointer-events:none;text-shadow:0 1px 3px #000d;
+}
+#shorts .shorts-empty,#shorts .shorts-unavailable{
+ height:100%;color:white;display:flex;flex-direction:column;gap:14px;align-items:center;
+ justify-content:center;text-align:center;padding:26px;box-sizing:border-box;
+}
+#shorts .shorts-empty span{font-size:50px}
+#shorts .shorts-empty strong{font-size:23px}
+#shorts .shorts-empty p{max-width:320px;line-height:1.5;color:#e4d8e7}
+#shorts .shorts-empty button{border:0;border-radius:15px;padding:12px 18px;background:#f4d9ef;color:#513553;font-weight:850}
+#shorts .shorts-loading{
+ position:absolute;top:70px;left:12px;right:12px;z-index:6;text-align:center;
+ padding:12px;background:#352540c4;color:white;border-radius:12px;
+}
+#shorts .shorts-composer{
+ position:absolute;z-index:12;inset:66px 12px auto;
+ box-sizing:border-box;max-width:460px;margin:0 auto;
+ max-height:calc(100% - 80px);overflow-y:auto;padding:15px;
+ border:1px solid #f3dbec;border-radius:20px;color:#352a40;background:#fff9fe;
+ box-shadow:0 10px 40px #0b0616a8;
+}
+#shorts .shorts-composer:not([open]){display:none}
+#shorts .shorts-composer>summary{display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-size:17px;list-style:none}
+#shorts .shorts-composer>summary span{font-size:21px}
+#shorts .shorts-composer form{margin-top:13px;display:grid;gap:8px}
+#shorts .shorts-note{font-size:12px;line-height:1.4;color:#6e6170}
+#shorts .shorts-compose-row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+#shorts .shorts-compose-row span{overflow-wrap:anywhere;font-size:12px;max-width:100%}
+#shorts .shorts-preview-grid:not([hidden]){display:flex;gap:7px;overflow-x:auto;padding:7px;background:#201529;border-radius:12px}
+#shorts .shorts-preview-tile{position:relative;flex:0 0 135px;height:170px;overflow:hidden}
+#shorts .shorts-preview-tile img,#shorts .shorts-preview-tile video{height:100%;width:100%;object-fit:cover;border-radius:9px}
+#shorts .shorts-preview-tile span{position:absolute;top:6px;left:6px;border-radius:50%;background:#fff;color:#39213b;padding:4px 8px;font-weight:850}
+#shorts .shorts-remove{justify-self:start}
+#shorts .shorts-composer textarea,#shorts .shorts-composer select{font-size:16px}
+#shorts .shorts-submit{border-radius:12px;font-size:16px}
+#shorts .shorts-toast{position:absolute;z-index:19;top:72px;left:12px;right:12px;margin:auto;max-width:440px;padding:12px;border-radius:15px;background:#fff;color:#4b3252;text-align:center;font-weight:850}
+#shorts .shorts-modal:not([hidden]){display:flex}
+#shorts .shorts-modal{
+ position:absolute;inset:0;background:#090514a5;z-index:16;
+ justify-content:center;align-items:flex-end;
+}
+#shorts .shorts-comments-panel{
+ background:#fff9fe;color:#312a38;width:100%;height:min(67%,600px);
+ border-radius:24px 24px 0 0;display:flex;flex-direction:column;
+ padding:17px 14px calc(16px + env(safe-area-inset-bottom));box-sizing:border-box;
+ box-shadow:0 -8px 30px #0005;
+}
+#shorts .shorts-comments-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+#shorts .shorts-comments-top h3{font-size:17px;margin:0}
+#shorts .shorts-comments-top button{padding:8px 14px;background:#eee2ec;border:0;border-radius:13px;font-weight:800}
+#shorts .shorts-comments-list{overflow-y:auto;flex:1;min-height:0;padding:8px 0;display:grid;align-content:start;gap:8px}
+#shorts .shorts-comment{background:#faedf6;border-radius:13px;padding:10px 12px;margin:0;font-size:14px;line-height:1.5;overflow-wrap:anywhere}
+#shorts .shorts-comment-empty{text-align:center;color:#82758a}
+#shorts #shorts-comment-form{display:flex;gap:8px}
+#shorts #shorts-comment-input{min-width:0;flex:1;border:1px solid #ead9e7;border-radius:14px;padding:12px;font-size:16px}
+#shorts #shorts-comment-submit{border:0;border-radius:13px;background:#583456;color:white;padding:11px 14px;font-weight:850}
+#shorts button:focus-visible,#shorts input:focus-visible,#shorts select:focus-visible,#shorts summary:focus-visible{outline:3px solid #e4a1ce;outline-offset:3px}
+@media (min-width:700px){
+ #shorts .shorts-reel{max-width:420px;margin:0 auto}
+ #shorts{background:#1a1320}
+}
 </style></head><body>
 <section id="signin-screen" class="signin-screen"><div class="signin-card"><img src="stafford-sisters-icon.png" class="signin-logo" alt="Stafford Sisters"><p class="small">PRIVATE FAMILY APP</p><h1>Stafford Sisters</h1><p class="signin-copy">Sign in to enter your family's private space.</p><form id="signin-form" class="signin-form"><label>Username<input id="username" autocomplete="username" placeholder="Your username" required></label><label>Password<input id="password" type="password" autocomplete="current-password" placeholder="Your password" required></label><button id="signin-button" class="signin-button">Sign In</button></form><div id="signin-status" class="signin-status" hidden></div><p class="signin-note">🔒 Private family app. There is no public sign-up.</p></div></section>
 <div id="private-app" class="private-app" hidden><header class="topbar"><div><div class="eyebrow">HAZEL + LYDIA</div><h1>Stafford Sisters <span>💕</span></h1></div><button id="top-profile-button" class="avatar top-profile-avatar">SS</button></header><main id="app">
 <section class="page active" id="home"><div class="hello-card"><div><p class="small">Welcome to your space ✨</p><h2 id="home-greeting">Hi, Sisters!</h2><p>Make something, share something, cook something, or just have fun together.</p></div><div class="sparkles">✨💕✨</div></div><button id="home-open-notifications" type="button" style="width:100%;padding:13px;margin:12px 0;border:1px solid #eee5ed;border-radius:14px;background:#fff0f6;text-align:left;font-weight:800">🔔 Notifications & settings <span id="home-notification-count"></span> ›</button><h3 class="section-title">What do you want to do?</h3><div class="feature-grid"><button class="feature-card pink" data-page="sisters"><span class="bell-wrap">🔔<i class="loop-dot"></i></span><strong>The Loop</strong><small>Posts, pictures & family</small></button><button class="feature-card peach" data-page="kitchen"><span>🍳</span><strong>Kitchen</strong><small>Recipes & cooking fun</small></button><button class="feature-card purple" data-page="create"><span>🎨</span><strong>Create</strong><small>Ideas, crafts & projects</small></button><button class="feature-card blue" data-page="teacher"><span>📚</span><strong>Teacher Corner</strong><small>Resources & school ideas</small></button><button class="feature-card pink" data-page="shorts"><span>🎬</span><strong>Shorts</strong><small>Videos, photos & music</small></button></div><div class="coming-card"><div class="coming-icon">📺</div><div><strong>Stafford Sisters TV</strong><p>Shows, movies, favorites and more are coming soon!</p></div></div></section>
 <section class="page" id="sisters"><div class="page-heading"><div><p class="small">OUR FAMILY SPACE</p><h2>The Loop 🔔</h2></div><button class="round-btn" data-page="create">＋</button></div><button id="open-notifications" type="button" style="width:100%;border:1px solid #eee5ed;border-radius:15px;background:white;padding:12px;margin:4px 0 14px;text-align:left;font-weight:800">🔔 Notifications <span id="notification-count"></span> ›</button><div id="family-stories" class="story-row"></div><div id="loop-loading" class="empty-card"><strong>Loading The Loop…</strong></div><div id="loop-feed"></div></section>
-<section class="page" id="shorts">
-<div class="page-heading"><div><p class="small">JUST FOR OUR FAMILY</p><h2>Shorts 🎬💕</h2></div></div>
-<p class="shorts-intro">Create fun photo or video Shorts for your family! Everyone can like, love, and comment. 🔒</p>
-<details class="shorts-composer" id="shorts-create-details">
-<summary>＋ Create a Short</summary>
-<form id="shorts-form">
-<div class="shorts-compose-row">
-<button type="button" id="shorts-pick-file">📷 Choose picture or video</button>
-<span id="shorts-file-name"></span>
+<section class="page" id="shorts" aria-label="Stafford Sisters Shorts">
+<div class="shorts-reel-header">
+ <div class="shorts-header-title"><strong>Shorts <span>💕</span></strong><small>🔒 Family only</small></div>
+ <div class="shorts-header-actions">
+  <button id="shorts-refresh" type="button" aria-label="Refresh Shorts">↻</button>
+  <button id="shorts-create-open" type="button" aria-label="Create a Short" onclick="document.querySelector('#shorts-create-details').open=true">＋ Create</button>
+ </div>
 </div>
-<input id="shorts-file" type="file" accept="image/*,video/mp4,video/quicktime,video/webm,.heic,.heif" hidden>
-<div id="shorts-preview" hidden></div>
-<button type="button" class="shorts-remove" id="shorts-remove-file">Remove selected picture/video</button>
-<label for="shorts-caption">Caption (optional)</label>
-<textarea id="shorts-caption" maxlength="1200" rows="3" placeholder="Tell your family about your Short…"></textarea>
-<label for="shorts-track">Add a soundtrack (optional)</label>
-<select id="shorts-track">
-<option value="none">No music</option>
-<option value="sunshine">☀️ Sunshine — cheerful</option>
-<option value="starlight">✨ Starlight — dreamy</option>
-<option value="cozy">💜 Cozy — gentle</option>
-</select>
-<button type="button" class="shorts-preview-music" id="shorts-preview-music">♫ Preview soundtrack</button>
-<p class="shorts-note">Music choices are original instrumental loops played inside the app. Videos can also keep their own recorded sound.</p>
-<p class="shorts-note">Videos up to 60 seconds, files under 50 MB.</p>
-<button type="submit" id="shorts-submit" class="shorts-submit">🎬 Post Short</button>
-<p id="shorts-status" class="action-status" role="status" hidden></p>
-</form>
+<details class="shorts-composer" id="shorts-create-details">
+ <summary>🎬 Create your Short <span aria-hidden="true">✕</span></summary>
+ <form id="shorts-form">
+  <p class="shorts-note">Choose one video (up to 60 seconds), or up to 6 pictures for a slideshow. Family only. 💕</p>
+  <div class="shorts-compose-row">
+   <button id="shorts-pick-file" type="button">📷 Add photos or video</button>
+   <span id="shorts-file-name"></span>
+  </div>
+  <input id="shorts-file" type="file" accept="image/*,video/mp4,video/quicktime,video/webm,.heic,.heif" multiple hidden>
+  <div id="shorts-preview" class="shorts-preview-grid" hidden></div>
+  <button id="shorts-remove-file" class="shorts-remove" type="button">Remove selected media</button>
+  <label for="shorts-caption">Write a caption (optional)</label>
+  <textarea id="shorts-caption" maxlength="1200" rows="3" placeholder="What's happening in your Short?"></textarea>
+  <label for="shorts-track">🎵 Choose a soundtrack (optional)</label>
+  <select id="shorts-track">
+   <option value="none">Original audio / No music</option>
+   <option value="sunshine">☀️ Sunshine — cheerful</option>
+   <option value="starlight">✨ Starlight — dreamy</option>
+   <option value="cozy">💜 Cozy — gentle</option>
+  </select>
+  <button id="shorts-preview-music" class="shorts-preview-music" type="button">♫ Preview music</button>
+  <p class="shorts-note">Soundtracks play when someone taps the music button on your Short. They aren't permanently added to the video file.</p>
+  <button id="shorts-submit" class="shorts-submit" type="submit">🎬 Post Short</button>
+  <p id="shorts-status" class="action-status" role="status" aria-live="polite" hidden></p>
+ </form>
 </details>
-<h3 class="section-title">Family Shorts</h3>
-<div id="shorts-loading" class="empty-card" hidden>Loading family Shorts…</div>
-<div id="shorts-feed"></div>
+<div id="shorts-loading" class="shorts-loading" hidden>Loading your family's Shorts…</div>
+<div id="shorts-feed" aria-label="Swipe up or down between Shorts"></div>
+<div id="shorts-toast" class="shorts-toast" role="status" hidden></div>
+<div id="shorts-comments-modal" class="shorts-modal" hidden>
+ <div class="shorts-comments-panel" role="dialog" aria-modal="true" aria-labelledby="shorts-comments-title">
+  <div class="shorts-comments-top"><h3 id="shorts-comments-title">Comments</h3><button type="button" id="shorts-comments-close" aria-label="Close comments">✕</button></div>
+  <div id="shorts-comments-list" class="shorts-comments-list"></div>
+  <form id="shorts-comment-form">
+   <input id="shorts-comment-input" type="text" maxlength="1000" placeholder="Leave a kind comment… 💕" aria-label="Write a comment" required>
+   <button id="shorts-comment-submit" type="submit">Post</button>
+  </form>
+ </div>
+</div>
 </section>
 <section class="page" id="notifications"><div class="page-heading"><div><p class="small">FAMILY UPDATES</p><h2>Notifications 🔔</h2></div><button id="notifications-back" class="round-btn" type="button">←</button></div><div style="padding:13px;border:1px solid #eee5ed;border-radius:14px;background:white;margin:10px 0"><strong>Notification preferences</strong><p style="font-size:13px;color:#786d80">Choose what appears in your notifications. Each family member has their own settings on this device.</p><div id="notification-preferences"></div><small id="notification-pref-status"></small><small style="display:block;margin-top:8px;color:#786d80">Phone reminders while the app is closed are not enabled yet.</small></div><button id="notifications-mark-all" type="button" style="width:100%;padding:12px;margin:8px 0;border:1px solid #eee5ed;border-radius:12px;background:#fff0f6;font-weight:800">✓ Mark all as read</button><div id="notification-list"></div></section><section class="page" id="create"><div class="page-heading"><div><p class="small">MAKE SOMETHING</p><h2>Create ✨</h2></div></div><form id="post-form" class="composer-card real-composer"><div class="composer-top"><span id="composer-avatar" class="mini-avatar">S</span><textarea id="post-body" maxlength="5000" placeholder="Add a caption…"></textarea></div><div id="photo-preview-wrap" class="photo-preview-wrap" hidden><img id="photo-preview" alt="Selected photo"><button id="remove-photo" type="button">×</button></div><div class="photo-picker-row"><button id="choose-photo" type="button">📷 Photo</button><input id="post-photo-file" type="file" accept="image/*" hidden><span id="photo-name"></span></div><div class="post-compose-footer"><span>🔒 Family only</span><button id="post-button">Post to The Loop</button></div><div id="post-status" class="action-status" hidden></div></form><button class="big-choice" data-page="kitchen"><span>🧁</span><div><strong>Create a recipe</strong><p>Save something delicious you made.</p></div><b>›</b></button><button class="big-choice" data-page="projects"><span>🖍️</span><div><strong>Start a project</strong><p>Crafts, drawings, ideas and inventions.</p></div><b>›</b></button><button class="big-choice" data-page="teacher"><span>📝</span><div><strong>Make a teacher resource</strong><p>Worksheets, classroom ideas and activities.</p></div><b>›</b></button></section>
 <section class="page" id="projects"><div class="page-heading"><div><p class="small">CREATE SOMETHING</p><h2>Crafts & Projects 🎨</h2></div></div><div class="project-hero"><span>🖍️</span><h3>Make a new project</h3><p>Write down your idea, supplies and steps, add a picture if you want, and share it with the family.</p><button id="add-project" class="kitchen-add" type="button">＋ Create a craft</button></div><form id="project-form" class="composer-card project-form" hidden><p class="small">NEW PROJECT</p><input id="project-title" maxlength="200" placeholder="Craft or project name" required><textarea id="project-description" placeholder="What are you making?"></textarea><textarea id="project-supplies" placeholder="Supplies you need"></textarea><textarea id="project-steps" placeholder="Steps — one per line"></textarea><input id="project-photo-file" type="file" accept="image/*" hidden><button id="choose-project-photo" class="project-photo-pick" type="button">📷 Add a picture</button><img id="project-photo-preview" class="recipe-photo-preview" hidden alt="Project preview"><div class="recipe-actions"><button class="project-submit" type="submit">Share Project</button><span>🔒 Family only</span></div><div id="project-status" class="action-status" hidden></div></form><h3 class="section-title">Our Projects</h3><div id="project-feed"></div></section><section class="page" id="kitchen"><div class="page-heading"><div><p class="small">STAFFORD SISTERS KITCHEN</p><h2>Let's Cook! 🍳</h2></div></div><div class="kitchen-hero"><span>👩‍🍳</span><h3>What's cooking today?</h3><p>Post your baking and recipes, then let the family rate and comment.</p><button id="add-recipe" class="kitchen-add">＋ Add a recipe</button></div><form id="recipe-form" class="composer-card recipe-form" hidden><p class="small">NEW KITCHEN POST</p><input id="recipe-title" maxlength="200" placeholder="Recipe or creation name" required><textarea id="recipe-description" placeholder="Tell us about it…"></textarea><textarea id="recipe-ingredients" placeholder="Ingredients (optional)"></textarea><textarea id="recipe-directions" placeholder="Directions (optional)"></textarea><input id="recipe-photo-file" type="file" accept="image/*" hidden><button id="choose-recipe-photo" class="recipe-photo-pick" type="button">📷 Add a photo</button><img id="recipe-photo-preview" class="recipe-photo-preview" hidden alt="Recipe preview"><div class="recipe-actions"><button class="recipe-submit" type="submit">Post to Kitchen</button><span>🔒 Family only</span></div><div id="recipe-status" class="action-status" hidden></div></form><h3 class="section-title">Our recipe box</h3><div id="kitchen-loading" class="empty-card"><strong>Loading Kitchen…</strong></div><div id="recipe-feed"></div></section>
@@ -137,7 +307,7 @@ async function loadLoop(){if(!me)return;$('#loop-loading').hidden=false;const{da
 async function loadKitchen(){if(!me)return;$('#kitchen-loading').hidden=false;const{data,error}=await supabase.from('kitchen_recipes').select('*,kitchen_ratings(id,user_id,rating),kitchen_comments(id,user_id,body,created_at)').order('created_at',{ascending:false});if(error){$('#kitchen-loading').innerHTML='<strong>Could not load Kitchen.</strong>';return}recipes=await Promise.all((data||[]).map(async r=>({...r,image_url:await signedUrl('kitchen-photos',r.image_path),kitchen_comments:(r.kitchen_comments||[]).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at))})));renderKitchen()}function renderKitchen(){const f=$('#recipe-feed');$('#kitchen-loading').hidden=true;if(!recipes.length){f.innerHTML='<div class="empty-card">🧁<strong>Your recipe box is ready!</strong><small>Add the first Stafford Sisters creation.</small></div>';return}f.innerHTML=recipes.map(r=>{const p=profileFor(r.user_id),ratings=r.kitchen_ratings||[],comments=r.kitchen_comments||[],mine=ratings.find(x=>x.user_id===me.id),avg=ratings.length?(ratings.reduce((a,x)=>a+x.rating,0)/ratings.length).toFixed(1):null;return`<article class="recipe-card" data-recipe="${r.id}">${r.image_url?`<img src="${esc(r.image_url)}">`:''}<div class="recipe-inner"><div class="recipe-author"><button class="profile-link" type="button" data-user-id="${r.user_id}" aria-label="View ${esc(p.display_name)} profile">${avatarMarkup(p)}</button><div><button type="button" class="profile-name-link" data-user-id="${r.user_id}">${esc(p.display_name)}</button><small>${ago(r.created_at)}</small></div>${r.user_id===me.id?'<button class="owner-delete" type="button" data-delete-kind="kitchen" data-delete-id="'+r.id+'" aria-label="Delete this recipe">🗑️</button>':''}</div><h3 class="recipe-title">${esc(r.title)}</h3>${r.description?`<p class="recipe-desc">${esc(r.description)}</p>`:''}${r.ingredients?`<div class="recipe-section"><b>Ingredients</b><br>${esc(r.ingredients)}</div>`:''}${r.directions?`<div class="recipe-section"><b>Directions</b><br>${esc(r.directions)}</div>`:''}<div class="rating-row"><b>Rate it</b><div class="stars">${[1,2,3,4,5].map(n=>`<button class="star-btn ${mine&&n<=mine.rating?'on':''}" data-rating="${n}">★</button>`).join('')}</div><div class="rating-summary">${avg?`⭐ ${avg} average · ${ratings.length} rating${ratings.length===1?'':'s'}`:'No ratings yet'}</div></div><div class="k-comments">${comments.map(c=>{const cp=profileFor(c.user_id);return`<div class="k-comment">${avatarMarkup(cp,'comment-avatar')}<div><b>${esc(cp.display_name)}</b> ${esc(c.body)}</div></div>`}).join('')}<form class="k-comment-form"><input maxlength="2000" placeholder="Write a comment…" required><button>Post</button></form></div></div></article>`}).join('')}
 const subjectNames={math:'Math',reading:'Reading',writing:'Writing',science:'Science','social-studies':'Social Studies',music:'Music',other:'Other'};async function loadTeacher(){if(!me)return;$('#teacher-loading').hidden=false;const{data,error}=await supabase.from('teacher_resources').select('*,teacher_reactions(id,user_id,reaction),teacher_comments(id,user_id,body,created_at)').order('created_at',{ascending:false});if(error){$('#teacher-loading').innerHTML='<strong>Could not load Teacher Corner.</strong>';return}resources=await Promise.all((data||[]).map(async r=>({...r,image_url:await signedUrl('teacher-resources',r.image_path),file_url:await signedUrl('teacher-resources',r.file_path),teacher_comments:(r.teacher_comments||[]).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at))})));renderTeacher()}function renderTeacher(){const f=$('#teacher-feed');$('#teacher-loading').hidden=true;const list=teacherSubject==='all'?resources:resources.filter(r=>r.subject===teacherSubject);$('#teacher-list-title').textContent=teacherSubject==='all'?'All Resources':subjectNames[teacherSubject];if(!list.length){f.innerHTML='<div class="empty-card">📚<strong>No resources here yet!</strong><small>Add the first one.</small></div>';return}f.innerHTML=list.map(r=>{const p=profileFor(r.user_id),rs=r.teacher_reactions||[],cs=r.teacher_comments||[],mine=rs.find(x=>x.user_id===me.id),likes=rs.filter(x=>x.reaction==='like').length,loves=rs.filter(x=>x.reaction==='love').length;return`<article class="teacher-card" data-resource="${r.id}">${r.image_url?`<img src="${esc(r.image_url)}" alt="${esc(r.title)}">`:''}<div class="teacher-inner"><div class="teacher-author"><button class="profile-link" type="button" data-user-id="${r.user_id}" aria-label="View ${esc(p.display_name)} profile">${avatarMarkup(p)}</button><div><button type="button" class="profile-name-link" data-user-id="${r.user_id}">${esc(p.display_name)}</button><small>${ago(r.created_at)}</small></div>${r.user_id===me.id?'<button class="owner-delete" type="button" data-delete-kind="teacher" data-delete-id="'+r.id+'" aria-label="Delete this resource">🗑️</button>':''}<span class="audience">🔒 Family</span></div><span class="teacher-tag">${esc(subjectNames[r.subject]||r.subject)}</span>${r.grade_level?`<span class="teacher-tag">${esc(r.grade_level)}</span>`:''}<h3 class="teacher-title">${esc(r.title)}</h3>${r.description?`<p class="teacher-desc">${esc(r.description)}</p>`:''}${r.file_url?`<a class="teacher-download" href="${esc(r.file_url)}" target="_blank">📎 Open ${esc(r.file_name||'resource')}</a>`:''}<div class="teacher-summary">${likes?`👍 ${likes}`:''}${loves?` ❤️ ${loves}`:''}${cs.length?` · 💬 ${cs.length}`:''}</div><div class="teacher-reacts"><button class="t-react ${mine?.reaction==='like'?'selected':''}" data-reaction="like">👍 Like</button><button class="t-react ${mine?.reaction==='love'?'selected':''}" data-reaction="love">❤️ Love</button></div><div class="t-comments">${cs.map(c=>{const cp=profileFor(c.user_id);return`<div class="t-comment">${avatarMarkup(cp,'comment-avatar')}<div><b>${esc(cp.display_name)}</b> ${esc(c.body)}</div></div>`}).join('')}<form class="t-comment-form"><input maxlength="2000" placeholder="Write a comment…" required><button>Post</button></form></div></div></article>`}).join('')}
 function parseProjectBody(body=''){if(!body.startsWith('🎨 CRAFT PROJECT:'))return null;const lines=body.split('\n'),title=(lines.shift()||'').replace('🎨 CRAFT PROJECT:','').trim();let section='description',out={title,description:'',supplies:'',steps:''};for(const line of lines){if(line==='🧺 SUPPLIES'){section='supplies';continue}if(line==='✂️ STEPS'){section='steps';continue}out[section]+=(out[section]?'\n':'')+line}return out}async function loadProjects(){if(!me)return;if(!posts.length)await loadLoop();const f=$('#project-feed'),items=posts.map(p=>({p,craft:parseProjectBody(p.body||'')})).filter(x=>x.craft);if(!items.length){f.innerHTML='<div class="empty-card">🎨<strong>No projects yet!</strong><small>Create the first Stafford Sisters craft.</small></div>';return}f.innerHTML=items.map(({p,craft})=>'<article class="project-card">'+(p.image_url?'<img src="'+esc(p.image_url)+'" alt="'+esc(craft.title)+'">':'')+'<div class="project-card-inner"><p class="small">'+esc(profileFor(p.user_id).display_name)+' · '+ago(p.created_at)+'</p><h3>'+esc(craft.title)+'</h3>'+(craft.description?'<p>'+esc(craft.description)+'</p>':'')+(craft.supplies?'<div class="project-block"><b>🧺 Supplies</b><br>'+esc(craft.supplies)+'</div>':'')+(craft.steps?'<div class="project-block"><b>✂️ Steps</b><br>'+esc(craft.steps)+'</div>':'')+'</div></article>').join('')}function clearProjectPhoto(){projectPhoto=null;if(projectPreviewUrl)URL.revokeObjectURL(projectPreviewUrl);projectPreviewUrl=null;$('#project-photo-file').value='';$('#project-photo-preview').hidden=true}async function loadManagePosts(){if(!me)return;const loading=$('#manage-loading'),list=$('#manage-list');loading.hidden=false;list.innerHTML='';const[a,b,c]=await Promise.all([supabase.from('loop_posts').select('id,body,created_at').eq('user_id',me.id).order('created_at',{ascending:false}),supabase.from('kitchen_recipes').select('id,title,created_at').eq('user_id',me.id).order('created_at',{ascending:false}),supabase.from('teacher_resources').select('id,title,subject,created_at').eq('user_id',me.id).order('created_at',{ascending:false})]);const items=[...(a.data||[]).map(x=>({kind:'loop',id:x.id,title:(x.body||'Loop photo post').slice(0,80),icon:'🔔',date:x.created_at})),...(b.data||[]).map(x=>({kind:'kitchen',id:x.id,title:x.title,icon:'🍳',date:x.created_at})),...(c.data||[]).map(x=>({kind:'teacher',id:x.id,title:x.title,icon:'📚',date:x.created_at}))].sort((x,y)=>new Date(y.date)-new Date(x.date));loading.hidden=true;if(!items.length){list.innerHTML='<div class="empty-card">✨<strong>No posts to manage.</strong><small>Your practice-post cleanup is complete!</small></div>';$('#manage-delete-selected').disabled=true;return}list.innerHTML=items.map(x=>'<label class="manage-item"><input type="checkbox" class="manage-check" data-kind="'+x.kind+'" data-id="'+x.id+'"><div><strong>'+x.icon+' '+esc(x.title||'Untitled')+'</strong><small>'+(x.kind==='loop'?'The Loop':x.kind==='kitchen'?'Kitchen':'Teacher Corner')+' · '+new Date(x.date).toLocaleDateString()+'</small></div></label>').join('');updateManageDeleteButton()}function updateManageDeleteButton(){const n=$('.manage-check:checked').length,b=$('#manage-delete-selected');if(b){b.disabled=!n;b.textContent=n?'Delete selected ('+n+')':'Delete selected'}}function openDeletePrompt(payload){pendingDelete=payload;const p=myProfile();$('#delete-username').value=p?.username||'';$('#delete-password').value='';$('#delete-status').hidden=true;$('#delete-copy').textContent=payload.kind==='bulk'?'Enter your username and password once to delete '+payload.items.length+' selected post'+(payload.items.length===1?'':'s')+'.':'Enter your username and password to delete this post.';$('#delete-modal').hidden=false;setTimeout(()=>$('#delete-password').focus(),50)}function closeDeletePrompt(){pendingDelete=null;$('#delete-modal').hidden=true;$('#delete-form').reset()}async function verifyDeleteCredentials(username,password){const p=myProfile(),u=username.trim().toLowerCase().replace(/[^a-z0-9._-]/g,'');if(!p||u!==(p.username||'').toLowerCase())return false;const verifier=createClient('https://pnawnvnselteqqgkqdva.supabase.co','sb_publishable_4y_vhUfDDIAR-nWw3ZO-zg_H0GmM3Mk',{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});const{data,error}=await verifier.auth.signInWithPassword({email:u+'@staffordsisters.family',password});const ok=!error&&data.user?.id===me.id;await verifier.auth.signOut();return ok}async function deleteOwnedItem(kind,id){let table,bucket=null,paths=[];if(kind==='loop'){table='loop_posts';const x=posts.find(p=>p.id===id);if(x?.image_path){bucket='loop-photos';paths=[x.image_path]}}else if(kind==='kitchen'){table='kitchen_recipes';const x=recipes.find(r=>r.id===id);if(x?.image_path){bucket='kitchen-photos';paths=[x.image_path]}}else if(kind==='teacher'){table='teacher_resources';const x=resources.find(r=>r.id===id);bucket='teacher-resources';if(x?.image_path)paths.push(x.image_path);if(x?.file_path)paths.push(x.file_path)}else throw new Error('Unknown post type');const{data,error}=await supabase.from(table).delete().eq('id',id).eq('user_id',me.id).select('id');if(error)throw error;if(!data||!data.length)throw new Error('Delete blocked');if(bucket&&paths.length)await supabase.storage.from(bucket).remove(paths)}async function refreshAfterDeletes(){await Promise.all([loadLoop(),loadKitchen(),loadTeacher()]);if($('#manage-posts').classList.contains('active'))await loadManagePosts()}function clearPhoto(){selectedPhoto=null;if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl=null;$('#photo-preview-wrap').hidden=true;$('#post-photo-file').value=''}async function uploadAvatar(file){if(!file||!file.type.startsWith('image/')||file.size>6*1024*1024)return;const ext=(file.name.split('.').pop()||'jpg').replace(/[^a-z0-9]/gi,'').toLowerCase()||'jpg',path=`${me.id}/profile-${Date.now()}.${ext}`,old=myProfile()?.avatar_path;const{error}=await supabase.storage.from('avatars').upload(path,file,{contentType:file.type});if(!error){await supabase.from('family_profiles').update({avatar_path:path,updated_at:new Date().toISOString()}).eq('user_id',me.id);if(old)await supabase.storage.from('avatars').remove([old]);await loadProfiles();openProfile(me.id);$('#avatar-status').textContent='Profile picture updated! 💕';$('#avatar-status').hidden=false}}
-$('#signin-form').onsubmit=async e=>{e.preventDefault();const email=`${$('#username').value.trim().toLowerCase().replace(/[^a-z0-9._-]/g,'')}@staffordsisters.family`,{error}=await supabase.auth.signInWithPassword({email,password:$('#password').value});if(error){$('#signin-status').textContent='That username or password did not work.';$('#signin-status').hidden=false}};supabase.auth.onAuthStateChange(async(_,session)=>{if(session){me=session.user;$('#signin-screen').hidden=true;$('#private-app').hidden=false;updateBadgeSettings();if('serviceWorker' in navigator)navigator.serviceWorker.ready.then(r=>r.pushManager?.getSubscription()).then(sub=>{if($('#push-alerts-enabled'))$('#push-alerts-enabled').checked=!!sub}).catch(()=>{});await loadProfiles();showPage('home');await loadNotificationPreferences();await loadNotifications();const qs=new URLSearchParams(location.search);if(qs.has('notification')||qs.has('notifications')){showPage('notifications');renderNotificationPrefs();history.replaceState(null,'',location.pathname)}}else{me=null;syncHomeBadge(0);$('#private-app').hidden=true;$('#signin-screen').hidden=false}});$('#private-app').hidden=true;$('#signout-button').onclick=async()=>{if($('#push-alerts-enabled')?.checked)await pushPreference(false);await supabase.auth.signOut()};$('#top-profile-button').onclick=()=>me&&openProfile(me.id);$('#family-menu-button').onclick=()=>me&&openProfile(me.id);$$('[data-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.page));$('#family-stories').onclick=e=>{const b=e.target.closest('[data-user-id]');if(b)openProfile(b.dataset.userId)};
+$('#signin-form').onsubmit=async e=>{e.preventDefault();const email=`${$('#username').value.trim().toLowerCase().replace(/[^a-z0-9._-]/g,'')}@staffordsisters.family`,{error}=await supabase.auth.signInWithPassword({email,password:$('#password').value});if(error){$('#signin-status').textContent='That username or password did not work.';$('#signin-status').hidden=false}};supabase.auth.onAuthStateChange(async(_,session)=>{if(session){me=session.user;$('#signin-screen').hidden=true;$('#private-app').hidden=false;updateBadgeSettings();if('serviceWorker' in navigator)navigator.serviceWorker.ready.then(r=>r.pushManager?.getSubscription()).then(sub=>{if($('#push-alerts-enabled'))$('#push-alerts-enabled').checked=!!sub}).catch(()=>{});await loadProfiles();showPage('home');await loadNotificationPreferences();await loadNotifications();const qs=new URLSearchParams(location.search);if(qs.has('notification')||qs.has('notifications')){showPage('notifications');renderNotificationPrefs();history.replaceState(null,'',location.pathname)}else if(qs.has('short')){showPage('shorts')}}else{me=null;syncHomeBadge(0);$('#private-app').hidden=true;$('#signin-screen').hidden=false}});$('#private-app').hidden=true;$('#signout-button').onclick=async()=>{if($('#push-alerts-enabled')?.checked)await pushPreference(false);await supabase.auth.signOut()};$('#top-profile-button').onclick=()=>me&&openProfile(me.id);$('#family-menu-button').onclick=()=>me&&openProfile(me.id);$$('[data-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.page));$('#family-stories').onclick=e=>{const b=e.target.closest('[data-user-id]');if(b)openProfile(b.dataset.userId)};
 $('#loop-feed').onclick=async e=>{const author=e.target.closest('[data-user-id]');if(author){openProfile(author.dataset.userId);return}const card=e.target.closest('.loop-post');if(!card)return;if(e.target.closest('.comment-toggle')){card.querySelector('input').focus();return}const rb=e.target.closest('.react-btn');if(rb){const pid=card.dataset.post,reaction=rb.dataset.reaction,{data:x}=await supabase.from('loop_reactions').select('id,reaction').eq('post_id',pid).eq('user_id',me.id).maybeSingle();if(x?.reaction===reaction)await supabase.from('loop_reactions').delete().eq('id',x.id);else if(x)await supabase.from('loop_reactions').update({reaction}).eq('id',x.id);else await supabase.from('loop_reactions').insert({post_id:pid,user_id:me.id,reaction});requestPushDispatch();loadLoop()}};$('#loop-feed').onsubmit=async e=>{const f=e.target.closest('.comment-form');if(!f)return;e.preventDefault();const body=f.querySelector('input').value.trim(),post_id=f.closest('.loop-post').dataset.post;if(body){await supabase.from('loop_comments').insert({post_id,user_id:me.id,body});requestPushDispatch();loadLoop()}};
 $('#choose-photo').onclick=()=>$('#post-photo-file').click();$('#remove-photo').onclick=clearPhoto;$('#post-photo-file').onchange=e=>{const f=e.target.files?.[0];if(!f||f.size>8*1024*1024)return;selectedPhoto=f;if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl=URL.createObjectURL(f);$('#photo-preview').src=previewUrl;$('#photo-preview-wrap').hidden=false;$('#photo-name').textContent=f.name};$('#post-form').onsubmit=async e=>{e.preventDefault();const body=$('#post-body').value.trim();if(!body&&!selectedPhoto)return;let path=null;if(selectedPhoto){const ext=(selectedPhoto.name.split('.').pop()||'jpg').replace(/[^a-z0-9]/gi,'').toLowerCase()||'jpg';path=`${me.id}/post-${Date.now()}.${ext}`;const{error}=await supabase.storage.from('loop-photos').upload(path,selectedPhoto,{contentType:selectedPhoto.type});if(error)return}const{error}=await supabase.from('loop_posts').insert({user_id:me.id,body,image_path:path});if(!error){requestPushDispatch();$('#post-body').value='';clearPhoto();showPage('sisters')}};
 $('#add-project').onclick=()=>{$('#project-form').hidden=!$('#project-form').hidden};$('#choose-project-photo').onclick=()=>$('#project-photo-file').click();$('#project-photo-file').onchange=e=>{const f=e.target.files?.[0];if(!f||f.size>8*1024*1024)return;projectPhoto=f;if(projectPreviewUrl)URL.revokeObjectURL(projectPreviewUrl);projectPreviewUrl=URL.createObjectURL(f);$('#project-photo-preview').src=projectPreviewUrl;$('#project-photo-preview').hidden=false};$('#project-form').onsubmit=async e=>{e.preventDefault();const title=$('#project-title').value.trim(),description=$('#project-description').value.trim(),supplies=$('#project-supplies').value.trim(),steps=$('#project-steps').value.trim(),st=$('#project-status');if(!title)return;st.hidden=true;let path=null;if(projectPhoto){const ext=(projectPhoto.name.split('.').pop()||'jpg').replace(/[^a-z0-9]/gi,'').toLowerCase()||'jpg';path=me.id+'/project-'+Date.now()+'.'+ext;const{error}=await supabase.storage.from('loop-photos').upload(path,projectPhoto,{contentType:projectPhoto.type});if(error){st.textContent='Could not upload the picture.';st.hidden=false;return}}const body='🎨 CRAFT PROJECT: '+title+(description?'\n'+description:'')+(supplies?'\n🧺 SUPPLIES\n'+supplies:'')+(steps?'\n✂️ STEPS\n'+steps:'');const{error}=await supabase.from('loop_posts').insert({user_id:me.id,body,image_path:path});if(error){if(path)await supabase.storage.from('loop-photos').remove([path]);st.textContent='Could not save the project.';st.hidden=false;return}requestPushDispatch();$('#project-form').reset();clearProjectPhoto();$('#project-form').hidden=true;await loadLoop();loadProjects()};$('#add-recipe').onclick=()=>{$('#recipe-form').hidden=!$('#recipe-form').hidden};$('#choose-recipe-photo').onclick=()=>$('#recipe-photo-file').click();$('#recipe-photo-file').onchange=e=>{const f=e.target.files?.[0];if(!f||f.size>8*1024*1024)return;recipePhoto=f;if(recipePreviewUrl)URL.revokeObjectURL(recipePreviewUrl);recipePreviewUrl=URL.createObjectURL(f);$('#recipe-photo-preview').src=recipePreviewUrl;$('#recipe-photo-preview').hidden=false};$('#recipe-form').onsubmit=async e=>{e.preventDefault();const title=$('#recipe-title').value.trim();if(!title)return;let path=null;if(recipePhoto){const ext=(recipePhoto.name.split('.').pop()||'jpg').replace(/[^a-z0-9]/gi,'').toLowerCase()||'jpg';path=`${me.id}/recipe-${Date.now()}.${ext}`;const{error}=await supabase.storage.from('kitchen-photos').upload(path,recipePhoto,{contentType:recipePhoto.type});if(error)return}const{error}=await supabase.from('kitchen_recipes').insert({user_id:me.id,title,description:$('#recipe-description').value.trim()||null,ingredients:$('#recipe-ingredients').value.trim()||null,directions:$('#recipe-directions').value.trim()||null,image_path:path});if(!error){requestPushDispatch();$('#recipe-form').reset();recipePhoto=null;$('#recipe-photo-preview').hidden=true;$('#recipe-form').hidden=true;loadKitchen()}};$('#recipe-feed').onclick=async e=>{const author=e.target.closest('[data-user-id]');if(author){openProfile(author.dataset.userId);return}const star=e.target.closest('.star-btn');if(!star)return;const recipe_id=star.closest('.recipe-card').dataset.recipe,rating=Number(star.dataset.rating),{data:x}=await supabase.from('kitchen_ratings').select('id').eq('recipe_id',recipe_id).eq('user_id',me.id).maybeSingle();if(x)await supabase.from('kitchen_ratings').update({rating,updated_at:new Date().toISOString()}).eq('id',x.id);else await supabase.from('kitchen_ratings').insert({recipe_id,user_id:me.id,rating});requestPushDispatch();loadKitchen()};$('#recipe-feed').onsubmit=async e=>{const f=e.target.closest('.k-comment-form');if(!f)return;e.preventDefault();const body=f.querySelector('input').value.trim(),recipe_id=f.closest('.recipe-card').dataset.recipe;if(body){await supabase.from('kitchen_comments').insert({recipe_id,user_id:me.id,body});requestPushDispatch();loadKitchen()}};
