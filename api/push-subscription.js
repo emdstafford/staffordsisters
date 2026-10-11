@@ -1,6 +1,6 @@
 import {createClient} from '@supabase/supabase-js';
 const url=process.env.SUPABASE_URL;
-const service=process.env.SUPABASE_SERVICE_ROLE_KEY;
+const service=process.env.SUPABASE_SECRET_KEY||process.env.SUPABASE_SERVICE_ROLE_KEY;
 export default async function handler(req,res){
  if(req.method!=='POST'&&req.method!=='DELETE')return res.status(405).json({error:'Method not allowed'});
  if(!url||!service)return res.status(503).json({error:'Push setup incomplete'});
