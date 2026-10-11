@@ -247,3 +247,63 @@
  .fun-video-library{grid-template-columns:1fr}
  .fun-player-modal{padding:5px}
 }
+
+
+/* App-style free streaming choices: whole tile taps to open the provider. */
+.fun-streaming-links .fun-panel-title{margin-bottom:8px}
+.fun-streaming-links .fun-panel-title h3{margin-bottom:0}
+.fun-free-pill{
+ border-radius:99px;background:#e5faeb;color:#286a40;
+ padding:6px 9px;font-weight:850;font-size:10px;white-space:nowrap;
+}
+.fun-streaming-links .fun-service-links{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:10px;margin-top:14px;
+}
+.fun-streaming-links .fun-service-links a.fun-app-tile{
+ display:flex;align-items:center;justify-content:flex-start;
+ gap:8px;min-width:0;box-sizing:border-box;
+ text-decoration:none;text-align:center;
+ padding:15px 5px 12px;border-radius:18px;
+ background:linear-gradient(180deg,#fff 0%,#fbf7fd 100%);
+ border:1px solid #ecdfec;
+ box-shadow:0 5px 14px #4c30500d;
+ color:#37293c;cursor:pointer;
+ transition:transform .15s ease,box-shadow .15s ease;
+ -webkit-tap-highlight-color:transparent;
+}
+.fun-streaming-links .fun-service-links a.fun-app-tile:hover,
+.fun-streaming-links .fun-service-links a.fun-app-tile:focus-visible{
+ transform:translateY(-2px);
+ box-shadow:0 9px 19px #4c305024;
+ outline:2px solid #c28bc3;
+ outline-offset:1px;
+}
+.fun-streaming-links .fun-service-links .fun-app-icon{
+ width:clamp(53px,14vw,72px);height:clamp(53px,14vw,72px);
+ border-radius:17px;display:flex;align-items:center;justify-content:center;
+ flex-direction:column;flex:0 0 auto;
+ font-size:clamp(15px,4vw,22px);letter-spacing:-1px;
+ font-weight:950;line-height:1.06;
+ box-shadow:0 4px 9px #34263817;
+}
+.fun-streaming-links .fun-service-links .fun-app-icon span{
+ font-size:12px;letter-spacing:0;line-height:1.1;
+}
+.fun-streaming-links .fun-service-links .fun-app-tile strong{
+ display:block;font-size:12px;font-weight:900;
+ line-height:1.1;overflow-wrap:anywhere;
+}
+.fun-streaming-links .fun-service-links .fun-app-tile small{
+ font-size:10px;color:#746776;
+ line-height:1.25;max-width:98%;
+}
+.fun-app-pbs .fun-app-icon{background:#d5f3fc;color:#19335f;border:1px solid #a9d5e9}
+.fun-app-tubi .fun-app-icon{background:#30116b;color:#ffeb06}
+.fun-app-pluto .fun-app-icon{background:#181824;color:#fff}
+.fun-app-pluto .fun-app-icon span{background:#fff;color:#141424;border-radius:3px;padding:1px 3px}
+@media(max-width:350px){
+ .fun-streaming-links .fun-service-links{gap:6px}
+ .fun-streaming-links .fun-service-links a.fun-app-tile{padding:12px 4px}
+ .fun-streaming-links .fun-service-links .fun-app-tile small{font-size:9px}
+}
