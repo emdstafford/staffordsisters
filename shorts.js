@@ -36,8 +36,8 @@ export function initShorts({supabase,getMe,profileFor,avatarMarkup,signedUrl,esc
   };
   note();music={ctx,timer:setInterval(note,tune.speed),button};button.textContent='♫ Stop soundtrack';
  }
- function resetMedia(){
-  mediaFile=null;input.value='';
+ function resetMedia(clearInput=true){
+  mediaFile=null;if(clearInput)input.value='';
   if(previewURL)URL.revokeObjectURL(previewURL);
   previewURL=null;$('#shorts-preview').hidden=true;$('#shorts-preview').innerHTML='';
   $('#shorts-file-name').textContent='';
@@ -57,7 +57,7 @@ export function initShorts({supabase,getMe,profileFor,avatarMarkup,signedUrl,esc
  $('#shorts-remove-file').onclick=()=>{resetMedia();message('')};
  input.onchange=async()=>{
   const file=input.files?.[0];
-  resetMedia();
+  resetMedia(false);
   if(!file)return;
   const video=isVideo(file),image=file.type.startsWith('image/')||/\.(heic|heif)$/i.test(file.name);
   if(!video&&!image){message('Please choose a picture or video.',true);return}
@@ -70,7 +70,8 @@ export function initShorts({supabase,getMe,profileFor,avatarMarkup,signedUrl,esc
   const display=document.createElement(video?'video':'img');display.src=previewURL;
   if(video){display.controls=true;display.playsInline=true;display.preload='metadata'}else display.alt='Short preview';
   $('#shorts-preview').replaceChildren(display);$('#shorts-preview').hidden=false;
-  $('#shorts-file-name').textContent=file.name;message('');
+  $('#shorts-file-name').textContent=file.name;
+  message((video?'Video':'Picture')+' selected! You can tap Post Short below.');
  };
  $('#shorts-preview-music').onclick=e=>{
   const track=$('#shorts-track').value;
@@ -81,16 +82,17 @@ export function initShorts({supabase,getMe,profileFor,avatarMarkup,signedUrl,esc
  form.onsubmit=async e=>{
   e.preventDefault();const me=getMe();
   if(!me){message('Please sign in first.',true);return}
-  if(!mediaFile){message('Choose a photo or video first.',true);return}
-  const video=isVideo(mediaFile),mediaType=video?'video':'image';
-  let ext=(mediaFile.name.split('.').pop()||'').replace(/[^a-z0-9]/gi,'').toLowerCase();
+  const selected=mediaFile||input.files?.[0];
+  if(!selected){message('Choose a photo or video first. Wait until the preview appears before posting.',true);return}
+  const video=isVideo(selected),mediaType=video?'video':'image';
+  let ext=(selected.name.split('.').pop()||'').replace(/[^a-z0-9]/gi,'').toLowerCase();
   if(!ext||ext.length>6)ext=video?'mp4':'jpg';
-  const mime=mediaFile.type||(video?'video/mp4':ext==='heic'?'image/heic':ext==='heif'?'image/heif':'image/jpeg');
+  const mime=selected.type||(video?'video/mp4':ext==='heic'?'image/heic':ext==='heif'?'image/heif':'image/jpeg');
   const path=me.id+'/short-'+Date.now()+'-'+Math.random().toString(36).slice(2,8)+'.'+ext;
   const button=$('#shorts-submit');button.disabled=true;button.textContent='Uploading…';
-  message('Privately uploading your Short…');
+  message('Privately uploading your Short… Please keep Stafford Sisters open.');
   try{
-   const uploaded=await supabase.storage.from('shorts-media').upload(path,mediaFile,{contentType:mime});
+   const uploaded=await supabase.storage.from('shorts-media').upload(path,selected,{contentType:mime,upsert:false});
    if(uploaded.error)throw uploaded.error;
    const {error}=await supabase.from('shorts').insert({
     user_id:me.id,caption:$('#shorts-caption').value.trim(),
@@ -101,7 +103,15 @@ export function initShorts({supabase,getMe,profileFor,avatarMarkup,signedUrl,esc
    await load();
   }catch(err){
    console.error('Short upload failed',err);
-   message('Could not post your Short. Make sure the private Shorts database setup was completed in Supabase.',true);
+   const detail=String(err?.message||'').trim();
+   const lower=detail.toLowerCase();
+   let help='Upload failed. Please try once more.';
+   if(/expired|jwt|unauthorized|token/.test(lower))help='Your sign-in may have expired. Sign out and back in, then retry.';
+   else if(/bucket not found|relation .* does not exist|schema cache|does not exist/.test(lower))help='Shorts database or storage setup is missing. Ask Mama to rerun the Shorts setup in Supabase.';
+   else if(/row.level security|policy|permission|forbidden|403/.test(lower))help='The Shorts storage permissions are blocking the upload. Ask Mama to check the Shorts Supabase setup.';
+   else if(/mime|content.type|not allowed|unsupported/.test(lower))help='This file type is not allowed. Try a JPG photo or MP4 video.';
+   else if(/size|large|413|maximum/.test(lower))help='This file is too large. Please try a smaller photo or video.';
+   message(help+(detail?' ('+detail.slice(0,160)+')':''),true);
   }finally{button.disabled=false;button.textContent='🎬 Post Short'}
  };
  async function load(){
