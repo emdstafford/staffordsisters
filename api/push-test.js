@@ -1,4 +1,5 @@
 import {adminClient,sendPush} from '../lib/push-core.js';
+import {verifyFamilyMember,membershipError} from '../lib/family-auth.js';
 
 export default async function handler(req,res){
  res.setHeader('Cache-Control','no-store');
@@ -10,9 +11,8 @@ export default async function handler(req,res){
   const db=adminClient();
   const {data:{user},error:authError}=await db.auth.getUser(token);
   if(authError||!user)return res.status(401).json({error:'Please sign in again.'});
-  const {data:profile,error:profileError}=await db.from('family_profiles')
-    .select('user_id').eq('user_id',user.id).maybeSingle();
-  if(profileError||!profile)return res.status(403).json({error:'Only signed-in family members may test alerts.'});
+  const family=await verifyFamilyMember(db,user,token);
+  if(!family.ok)return membershipError(res,family);
   const {count,error:countError}=await db.from('family_notifications')
     .select('id',{head:true,count:'exact'}).eq('recipient_id',user.id).is('read_at',null);
   if(countError)throw countError;
