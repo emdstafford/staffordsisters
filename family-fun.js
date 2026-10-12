@@ -157,7 +157,7 @@ export function initFamilyFun({getMe}){
       '<button class="fun-button" type="button" data-save-video="'+esc(video.id)+'">＋ List</button>'+
      '</div></div></article>';
   }).join('');
-  $('#tv-video-filter button').forEach(b=>{
+  $$('#tv-video-filter button').forEach(b=>{
    b.classList.toggle('active',b.dataset.videoFilter===videoFilter);
    b.setAttribute('aria-pressed',String(b.dataset.videoFilter===videoFilter));
   });
