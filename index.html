@@ -865,21 +865,22 @@ async function pushPreference(enabled){
   toggle.checked=!enabled;
  }finally{toggle.disabled=false}
 }
-$('#push-send-test').onclick=async()=>{
- const button=$('#push-send-test'),status=$('#push-alerts-status');
+async function sendPhoneTest(button,status){
+ const label=button.textContent;
  button.disabled=true;button.textContent='Sending test…';
- status.textContent='Sending a test alert to your iPhone…';
+ status.textContent='Sending a test alert to your phone…';
  try{
-  if(Notification.permission!=='granted')throw Error('Please enable background alerts first.');
+  if(typeof Notification==='undefined'||Notification.permission!=='granted')throw Error('Please enable background alerts first.');
   const session=(await supabase.auth.getSession()).data.session;
   if(!session)throw Error('Sign in again and retry.');
   const response=await fetch('/api/push-test',{method:'POST',headers:{Authorization:'Bearer '+session.access_token}});
   const data=await response.json().catch(()=>({}));
   if(!response.ok)throw Error(data.error||'The push server could not send a test.');
-  status.textContent='✅ Test sent! Look for a Stafford Sisters notification on your iPhone. If you see nothing, check Settings → Notifications.';
+  status.textContent='✅ Test sent! Check for the Stafford Sisters alert on your phone.';
  }catch(e){status.textContent=e?.message||'Test notification failed.'}
- finally{button.disabled=false;button.textContent='🔔 Send a test notification'}
-};
+ finally{button.disabled=false;button.textContent=label}
+}
+$('#push-send-test').onclick=()=>sendPhoneTest($('#push-send-test'),$('#push-alerts-status'));
 $('#push-alerts-enabled').addEventListener('change',async e=>{
  await pushPreference(e.target.checked);
  if(phonePushIsEnabled())markPhoneInviteRead();
@@ -909,7 +910,7 @@ $('#home-push-invite-read').onclick=async()=>{
  markPhoneInviteRead();await loadNotifications();
 };
 $('#notifications-phone-enable').onclick=()=>enablePhonePushFromInvite();
-$('#notifications-phone-test').onclick=()=>$('#push-send-test').click();
+$('#notifications-phone-test').onclick=()=>sendPhoneTest($('#notifications-phone-test'),$('#notifications-phone-status'));
 
 shortsApp=initShorts({
  supabase,getMe:()=>me,profileFor,avatarMarkup,signedUrl,esc,ago,showPage,openProfile,pushDispatch:requestPushDispatch
