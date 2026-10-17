@@ -188,3 +188,11 @@
  color:white;background:#2c2135b8;border:1px solid #ffffff78;
  text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
+
+/* Permanently embedded video audio is labeled, not played a second time. */
+#shorts .shorts-music-embedded{
+ display:inline-block;margin-top:7px;max-width:min(100%,340px);
+ border-radius:999px;padding:8px 13px;
+ color:#fff;background:#362541aa;border:1px solid #ffecff85;
+ font-size:12px;font-weight:850;line-height:1.3;
+}
