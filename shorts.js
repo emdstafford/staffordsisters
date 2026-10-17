@@ -119,10 +119,14 @@ export function initShorts({supabase,getMe,profileFor,avatarMarkup,esc,ago,openP
   if(!getMe()){showStatus('Please sign in again.',true);return}
   if(!selectedFiles.length){showStatus('Add a picture or short video first.',true);return}
   const button=$('#shorts-submit'),files=[...selectedFiles],mediaType=isVideo(files[0])?'video':'image';
+  const chosenTrack=$('#shorts-track').value;
   button.disabled=true;button.textContent='Posting…';
   try{
    showStatus('Preparing your private Short…');
-   const result=await api('POST',{action:'prepare',files:files.map(f=>({name:f.name,size:f.size,type:f.type}))});
+   const result=await api('POST',{
+    action:'prepare',track:chosenTrack,
+    files:files.map(f=>({name:f.name,size:f.size,type:f.type}))
+   });
    if(!result.uploads||result.uploads.length!==files.length)throw Error('The upload was not prepared. Try again.');
    const paths=[];
    for(const [i,file] of files.entries()){
@@ -135,14 +139,13 @@ export function initShorts({supabase,getMe,profileFor,avatarMarkup,esc,ago,openP
     if(upload.error)throw Error('Could not upload picture/video '+(i+1)+': '+upload.error.message);
     paths.push(info.path);
    }
-   const chosenTrack=$('#shorts-track').value;
    // Uploads are private. When a video has a soundtrack, replace that upload
    // with a real MP4 whose audio is mixed into the file before publishing it.
    if(mediaType==='video'&&chosenTrack!=='none'){
     stopMusic();
     showStatus('🎵 Adding music into your video… This can take up to a minute. Please keep the app open!');
     const mixed=await api('POST',{path:paths[0],track:chosenTrack},'/api/shorts-remix');
-    if(!mixed?.embedded||!mixed.path||!/-mix\.mp4$/i.test(mixed.path)){
+    if(!mixed?.embedded||!mixed.path||!/-mix(?:-music-(?:sparkle|dance|adventure|chill|funky))?\.mp4$/i.test(mixed.path)){
      throw Error('Could not attach the music to your video. Your Short was not posted. Try again.');
     }
     paths[0]=mixed.path;
@@ -150,7 +153,7 @@ export function initShorts({supabase,getMe,profileFor,avatarMarkup,esc,ago,openP
    showStatus('Saving your Short…');
    await api('POST',{
     action:'create',paths,mediaType,
-    caption:$('#shorts-caption').value.trim(),track:$('#shorts-track').value
+    caption:$('#shorts-caption').value.trim(),track:chosenTrack
    });
    pushDispatch();
    stopMusic();details.open=false;resetMedia();form.reset();
@@ -192,7 +195,7 @@ export function initShorts({supabase,getMe,profileFor,avatarMarkup,esc,ago,openP
        '<button type="button" class="shorts-caption-more" data-short-caption-more aria-label="Read full caption"'+(p.caption.length>75||/\n/.test(p.caption)?'':' hidden')+'>… more</button>'+
       '</div>':'')+
      (SHORTS_TRACKS[p.music_track]&&p.music_track!=='none'?
-       (p.media_type==='video'&&p.media?.[0]?.path?.endsWith('-mix.mp4')?
+       (p.media_type==='video'&&/-mix(?:-music-(?:sparkle|dance|adventure|chill|funky))?\.mp4$/i.test(p.media?.[0]?.path||'')?
         '<span class="shorts-music-embedded" aria-label="Soundtrack permanently included in video">🎵 '+esc(SHORTS_TRACKS[p.music_track].name)+' · in video</span>':
         '<button type="button" class="shorts-music-toggle" data-track="'+esc(p.music_track)+'" aria-label="Play '+esc(SHORTS_TRACKS[p.music_track].name)+' soundtrack">▶ '+esc(SHORTS_TRACKS[p.music_track].emoji)+' '+esc(SHORTS_TRACKS[p.music_track].name)+'</button>'
        ):'')+
