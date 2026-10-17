@@ -92,7 +92,11 @@ export default async function handler(req,res){
   if(stats.size<1000||stats.size>MAX_BYTES)
    return fail(res,422,'The music video was too large to upload. Try a shorter video.');
 
-  const newPath=user.id+'/short-'+randomUUID()+'-mix.mp4';
+  // For expanded tracks, keep the exact song identity in the finished
+  // private video's filename. The Shorts table still accepts only original
+  // music_track values; GET restores the chosen track from this suffix.
+  const musicTag=['sparkle','dance','adventure','chill','funky'].includes(track)?'-music-'+track:'';
+  const newPath=user.id+'/short-'+randomUUID()+'-mix'+musicTag+'.mp4';
   const finished=await readFile(outputPath);
   const {error:uploadError}=await db.storage.from(BUCKET).upload(newPath,finished,{
    contentType:'video/mp4',cacheControl:'3600',upsert:false
