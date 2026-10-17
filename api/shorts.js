@@ -8,8 +8,14 @@ const allowed=new Map([
  ['webp','image/webp'],['heic','image/heic'],['heif','image/heif'],
  ['mp4','video/mp4'],['mov','video/quicktime'],['webm','video/webm']
 ]);
-const musicChoices=new Set(['none','sunshine','starlight','cozy','sparkle','dance','adventure','chill','funky']);
-const PATH_RX=/^[0-9a-f-]{36}\/short-[0-9a-f-]{36}(?:-mix)?\.(jpg|jpeg|png|webp|heic|heif|mp4|mov|webm)$/i;
+const extraMusicChoices=new Set(['sparkle','dance','adventure','chill','funky']);
+const musicChoices=new Set(['none','sunshine','starlight','cozy',...extraMusicChoices]);
+// The existing Supabase shorts_music_track_check allows only the original
+// soundtrack values. Preserve that DB constraint without asking a parent to
+// run SQL: store newly added soundtrack IDs in private media filenames.
+// Always decode the real ID when returning Shorts to the signed-in family.
+const PATH_RX=/^[0-9a-f-]{36}\/short-[0-9a-f-]{36}(?:-mix)?(?:-music-(?:sparkle|dance|adventure|chill|funky))?\.(jpg|jpeg|png|webp|heic|heif|mp4|mov|webm)$/i;
+const musicFromPath=path=>String(path||'').match(/-music-(sparkle|dance|adventure|chill|funky)\.(?:jpg|jpeg|png|webp|heic|heif|mp4|mov|webm)$/i)?.[1]?.toLowerCase()||null;
 const fail=(res,code,message)=>res.status(code).json({error:message});
 const arrayOfPaths=raw=>{
  if(!raw||typeof raw!=='string')return [];
@@ -53,7 +59,8 @@ export default async function handler(req,res){
      return {url:link.signedUrl,path};
     }));
     return {
-     id:s.id,user_id:s.user_id,caption:s.caption,media_type:s.media_type,music_track:s.music_track,created_at:s.created_at,
+     id:s.id,user_id:s.user_id,caption:s.caption,media_type:s.media_type,
+     music_track:musicFromPath(paths[0])||s.music_track,created_at:s.created_at,
      media:media.filter(Boolean),
      shorts_reactions:s.shorts_reactions||[],
      shorts_comments:(s.shorts_comments||[]).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at))
@@ -78,12 +85,17 @@ export default async function handler(req,res){
     types.push(mime.startsWith('video/')?'video':'image');
    }
    if(total>50*1024*1024)return fail(res,400,'Please keep the whole Short under 50 MB.');
+   const selectedTrack=String(body.track||'none');
+   if(!musicChoices.has(selectedTrack))return fail(res,400,'Please choose one of the available soundtracks.');
    if(types.includes('video')&&(files.length>1||types[0]!=='video'))
     return fail(res,400,'Add one video, or a group of photos—not both.');
    const uploads=[];
-   for(const f of files){
+   for(const [index,f] of files.entries()){
     const ext=String(f.name).split('.').pop().toLowerCase();
-    const path=me.id+'/short-'+randomUUID()+'.'+ext;
+    // Photo Shorts do not go through video remuxing; tag their first file.
+    const songTag=types[0]==='image'&&index===0&&extraMusicChoices.has(selectedTrack)
+     ?'-music-'+selectedTrack:'';
+    const path=me.id+'/short-'+randomUUID()+songTag+'.'+ext;
     const {data,error}=await db.storage.from(BUCKET).createSignedUploadUrl(path);
     if(error)throw error;
     uploads.push({path,token:data.token});
@@ -101,9 +113,15 @@ export default async function handler(req,res){
     return fail(res,400,'Short details were not valid. Please select the media again.');
    if(paths.some(p=>mediaType==='video'?!/\.(mp4|mov|webm)$/i.test(p):!/\.(jpg|jpeg|png|webp|heic|heif)$/i.test(p)))
     return fail(res,400,'The selected files do not match this Short.');
+   const tag=musicFromPath(paths[0]);
+   if((extraMusicChoices.has(body.track)&&tag!==body.track)||
+      (!extraMusicChoices.has(body.track)&&tag)||
+      paths.slice(1).some(musicFromPath))
+    return fail(res,400,'The soundtrack information did not match the uploaded Short. Try uploading again.');
+   const storedMusicTrack=extraMusicChoices.has(body.track)?'sunshine':body.track;
    const {data,error}=await db.from('shorts').insert({
     user_id:me.id,caption,media_path:paths.length===1?paths[0]:JSON.stringify(paths),
-    media_type:mediaType,music_track:body.track
+    media_type:mediaType,music_track:storedMusicTrack
    }).select('id').single();
    if(error)throw error;
    return res.status(201).json({ok:true,id:data.id});
