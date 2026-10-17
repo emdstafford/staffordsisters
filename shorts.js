@@ -12,12 +12,12 @@ export function initShorts({supabase,getMe,profileFor,avatarMarkup,esc,ago,openP
   status.textContent=message;status.hidden=!message;
   status.style.color=isError?'#a12c51':'#426447';
  }
- async function api(method,payload){
+ async function api(method,payload,endpoint='/api/shorts'){
   const {data:{session}}=await supabase.auth.getSession();
   if(!session)throw Error('Please sign in to Stafford Sisters again.');
   let response;
   try{
-   response=await fetch('/api/shorts',{
+   response=await fetch(endpoint,{
     method,cache:'no-store',
     headers:{Authorization:'Bearer '+session.access_token,...(method==='POST'?{'Content-Type':'application/json'}:{})},
     ...(method==='POST'?{body:JSON.stringify(payload)}:{})
@@ -133,6 +133,18 @@ export function initShorts({supabase,getMe,profileFor,avatarMarkup,esc,ago,openP
     if(upload.error)throw Error('Could not upload picture/video '+(i+1)+': '+upload.error.message);
     paths.push(info.path);
    }
+   const chosenTrack=$('#shorts-track').value;
+   // Uploads are private. When a video has a soundtrack, replace that upload
+   // with a real MP4 whose audio is mixed into the file before publishing it.
+   if(mediaType==='video'&&chosenTrack!=='none'){
+    stopMusic();
+    showStatus('🎵 Adding music into your video… This can take up to a minute. Please keep the app open!');
+    const mixed=await api('POST',{path:paths[0],track:chosenTrack},'/api/shorts-remix');
+    if(!mixed?.embedded||!mixed.path||!/-mix\.mp4$/i.test(mixed.path)){
+     throw Error('Could not attach the music to your video. Your Short was not posted. Try again.');
+    }
+    paths[0]=mixed.path;
+   }
    showStatus('Saving your Short…');
    await api('POST',{
     action:'create',paths,mediaType,
@@ -173,7 +185,11 @@ export function initShorts({supabase,getMe,profileFor,avatarMarkup,esc,ago,openP
       '<button type="button" class="shorts-username" data-short-profile="'+esc(p.user_id)+'">'+esc(author.display_name)+'</button>'+
       '<small>'+esc(ago(p.created_at))+'</small></div>'+
      (p.caption?'<p class="shorts-reel-caption">'+esc(p.caption)+'</p>':'')+
-     (SHORTS_TRACKS[p.music_track]&&p.music_track!=='none'?'<button type="button" class="shorts-music-toggle" data-track="'+esc(p.music_track)+'" aria-label="Play '+esc(SHORTS_TRACKS[p.music_track].name)+' soundtrack">▶ '+esc(SHORTS_TRACKS[p.music_track].emoji)+' '+esc(SHORTS_TRACKS[p.music_track].name)+'</button>':'')+
+     (SHORTS_TRACKS[p.music_track]&&p.music_track!=='none'?
+       (p.media_type==='video'&&p.media?.[0]?.path?.endsWith('-mix.mp4')?
+        '<span class="shorts-music-embedded" aria-label="Soundtrack permanently included in video">🎵 '+esc(SHORTS_TRACKS[p.music_track].name)+' · in video</span>':
+        '<button type="button" class="shorts-music-toggle" data-track="'+esc(p.music_track)+'" aria-label="Play '+esc(SHORTS_TRACKS[p.music_track].name)+' soundtrack">▶ '+esc(SHORTS_TRACKS[p.music_track].emoji)+' '+esc(SHORTS_TRACKS[p.music_track].name)+'</button>'
+       ):'')+
     '</div>'+
     '<div class="shorts-overlay-side">'+
      '<button type="button" class="shorts-side-button'+(mine?.reaction==='like'?' is-selected':'')+'" data-short-react="like" aria-label="Like Short"><span>👍</span><small>'+likes+'</small></button>'+
@@ -295,6 +311,12 @@ export function initShorts({supabase,getMe,profileFor,avatarMarkup,esc,ago,openP
   toast.textContent=text;toast.hidden=false;
   setTimeout(()=>{toast.hidden=true},3200);
  }
+ // When a video plays, turn off any separate preview so audio doesn't overlap.
+ feed.addEventListener('play',e=>{
+  if(!e.target.matches?.('.shorts-video'))return;
+  stopMusic();
+  $('.shorts-video').forEach(v=>{if(v!==e.target&&!v.paused)v.pause()});
+ },true);
  $('#shorts-refresh').onclick=()=>load();
  document.addEventListener('visibilitychange',()=>{if(document.hidden)stopMusic()});
  function stop(){stopMusic();$$('.shorts-video').forEach(v=>v.pause())}
