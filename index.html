@@ -347,6 +347,7 @@
  <div class="notification-optin-actions">
   <button id="notifications-phone-enable" type="button">Turn on phone alerts</button>
   <button id="notifications-phone-test" type="button">🔔 Send a test</button>
+  <button id="notifications-phone-preview" type="button">✨ Preview an alert on this phone</button>
  </div>
  <small id="notifications-phone-status" role="status" aria-live="polite">On iPhone, add Stafford Sisters to your Home Screen and open it from the icon first.</small>
 </div>
@@ -911,6 +912,32 @@ $('#home-push-invite-read').onclick=async()=>{
 };
 $('#notifications-phone-enable').onclick=()=>enablePhonePushFromInvite();
 $('#notifications-phone-test').onclick=()=>sendPhoneTest($('#notifications-phone-test'),$('#notifications-phone-status'));
+$('#notifications-phone-preview').onclick=async()=>{
+ const button=$('#notifications-phone-preview'),status=$('#notifications-phone-status');
+ button.disabled=true;
+ try{
+  if(!('Notification' in window)||!('serviceWorker' in navigator)){
+   throw Error('This phone cannot show notification previews here. On iPhone, add Stafford Sisters to the Home Screen and open it from the icon.');
+  }
+  if(/iPhone|iPad|iPod/.test(navigator.userAgent)&&!(navigator.standalone||matchMedia('(display-mode: standalone)').matches))
+   throw Error('On iPhone, please open Stafford Sisters using its Home Screen icon, not Safari.');
+  // A notification is never shown unless the person has already opted in.
+  if(Notification.permission!=='granted')
+   throw Error('First tap “Turn on phone alerts” and allow notifications. Then try this preview.');
+  const registration=await Promise.race([
+   navigator.serviceWorker.ready,
+   new Promise((_,reject)=>setTimeout(()=>reject(Error('The app could not open its notification service. Close and reopen Stafford Sisters.')),10000))
+  ]);
+  await registration.showNotification('Stafford Sisters 💕',{
+   body:'Hello! This is your phone notification preview. 🔔',
+   icon:'/stafford-sisters-icon.png',badge:'/stafford-sisters-icon.png',
+   tag:'stafford-local-preview',
+   data:{url:'/?notifications=1'}
+  });
+  status.textContent='✅ Preview requested! Look at your phone notification area. This checks this phone only; automatic alerts when others post still need the push server.';
+ }catch(error){status.textContent=error?.message||'Could not preview a notification on this phone.'}
+ finally{button.disabled=false}
+};
 
 shortsApp=initShorts({
  supabase,getMe:()=>me,profileFor,avatarMarkup,signedUrl,esc,ago,showPage,openProfile,pushDispatch:requestPushDispatch
