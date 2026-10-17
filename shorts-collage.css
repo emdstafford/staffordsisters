@@ -196,3 +196,44 @@
  color:#fff;background:#362541aa;border:1px solid #ffecff85;
  font-size:12px;font-weight:850;line-height:1.3;
 }
+
+/* Shorts captions: keep the video readable, with a full-text reading sheet. */
+#shorts .shorts-caption-preview{margin:8px 0 9px;max-width:100%}
+#shorts .shorts-reel-caption.shorts-caption-clamp{
+ margin:0;max-height:none;overflow:hidden;
+ display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+ line-clamp:2;
+ font-size:14px;line-height:1.4;white-space:pre-line;overflow-wrap:anywhere;
+}
+#shorts .shorts-caption-more{
+ display:inline-block;background:none;border:0;color:#fff;
+ font-weight:900;font-size:13px;line-height:1.3;
+ text-shadow:0 1px 4px #000d;
+ padding:6px 8px 6px 0;margin-top:2px;text-align:left;
+ text-decoration:underline;text-decoration-color:#ffffff9c;text-underline-offset:3px;
+}
+#shorts .shorts-caption-more[hidden],#shorts #shorts-caption-modal[hidden]{display:none!important}
+#shorts .shorts-caption-panel{
+ width:100%;max-height:min(78%,680px);
+ background:#fff9fe;color:#352a40;
+ border-radius:24px 24px 0 0;
+ display:flex;flex-direction:column;gap:8px;box-sizing:border-box;
+ padding:18px 16px calc(17px + env(safe-area-inset-bottom));
+ box-shadow:0 -8px 30px #0005;
+}
+#shorts .shorts-caption-panel .shorts-comments-top{flex-shrink:0}
+#shorts .shorts-caption-author{
+ font-size:12px;font-weight:750;color:#90768d;margin:2px 0 3px;
+ flex-shrink:0;overflow-wrap:anywhere;
+}
+#shorts .shorts-caption-full{
+ white-space:pre-wrap;overflow-wrap:anywhere;overflow-y:auto;
+ flex:1;min-height:0;margin:0;
+ padding:14px 10px 14px 2px;
+ font-size:15px;line-height:1.6;color:#4c3b50;
+ user-select:text;-webkit-user-select:text;
+}
+#shorts .shorts-caption-private{
+ margin:4px 0 0;font-size:11px;color:#876e87;
+ flex-shrink:0;
+}
