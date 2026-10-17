@@ -206,10 +206,45 @@
  #shorts .shorts-reel{max-width:420px;margin:0 auto}
  #shorts{background:#1a1320}
 }
+
+/* One-time opt-in reminder; nobody is subscribed without a tap. */
+.push-invite{display:flex;gap:12px;padding:14px;margin:10px 0 14px;
+ background:linear-gradient(125deg,#fff3fa,#eee7ff);border:1px solid #eacfe4;
+ border-radius:18px;color:#4e3654;box-shadow:0 4px 14px #5e32600c}
+.push-invite[hidden]{display:none!important}
+.push-invite-icon{font-size:27px;line-height:1.1;background:#fff9;
+ border-radius:14px;padding:10px;align-self:flex-start}
+.push-invite-copy{flex:1;min-width:0}
+.push-invite-copy strong{font-size:14px;font-weight:850}
+.push-invite-copy p{margin:5px 0 10px;font-size:12px;line-height:1.45;color:#735b77}
+.push-invite-actions{display:flex;gap:8px;flex-wrap:wrap}
+.push-invite-actions button,.notification-optin-actions button{
+ border:1px solid #ddc5db;border-radius:11px;background:#fff;
+ padding:9px 11px;font:inherit;font-size:12px;font-weight:800;color:#604565;cursor:pointer}
+.push-invite-actions button:first-child,.notification-optin-actions button:first-child{
+ background:#704779;color:white;border-color:#704779}
+.notification-optin-card{padding:14px;border:1px solid #e9cbe0;border-radius:15px;
+ background:#fff0f7;color:#503c55;margin:8px 0 13px}
+.notification-optin-card h3{font-size:15px;margin:0 0 7px}
+.notification-optin-card p{font-size:13px;line-height:1.45;margin:0 0 11px}
+.notification-optin-card small{display:block;color:#806d82;margin:10px 0 0}
+.notification-optin-actions{display:flex;gap:8px;flex-wrap:wrap}
+
 </style></head><body>
 <section id="signin-screen" class="signin-screen"><div class="signin-card"><img src="stafford-sisters-icon.png" class="signin-logo" alt="Stafford Sisters"><p class="small">PRIVATE FAMILY APP</p><h1>Stafford Sisters</h1><p class="signin-copy">Sign in to enter your family's private space.</p><form id="signin-form" class="signin-form"><label>Username<input id="username" autocomplete="username" placeholder="Your username" required></label><label>Password<input id="password" type="password" autocomplete="current-password" placeholder="Your password" required></label><button id="signin-button" class="signin-button">Sign In</button></form><div id="signin-status" class="signin-status" hidden></div><p class="signin-note">🔒 Private family app. There is no public sign-up.</p></div></section>
 <div id="private-app" class="private-app" hidden><header class="topbar"><div><div class="eyebrow">HAZEL + LYDIA</div><h1>Stafford Sisters <span>💕</span></h1></div><button id="top-profile-button" class="avatar top-profile-avatar">SS</button></header><main id="app">
-<section class="page active" id="home"><div class="hello-card"><div><p class="small">Welcome to your space ✨</p><h2 id="home-greeting">Hi, Sisters!</h2><p>Make something, share something, cook something, or just have fun together.</p></div><div class="sparkles">✨💕✨</div></div><button id="home-open-notifications" type="button" style="width:100%;padding:13px;margin:12px 0;border:1px solid #eee5ed;border-radius:14px;background:#fff0f6;text-align:left;font-weight:800">🔔 Notifications & settings <span id="home-notification-count"></span> ›</button><h3 class="section-title">What do you want to do?</h3><div class="feature-grid"><button class="feature-card pink" data-page="sisters"><span class="bell-wrap">🔔<i class="loop-dot"></i></span><strong>The Loop</strong><small>Posts, pictures & family</small></button><button class="feature-card peach" data-page="kitchen"><span>🍳</span><strong>Kitchen</strong><small>Recipes & cooking fun</small></button><button class="feature-card purple" data-page="create"><span>🎨</span><strong>Create</strong><small>Ideas, crafts & projects</small></button><button class="feature-card blue" data-page="teacher"><span>📚</span><strong>Teacher Corner</strong><small>Resources & school ideas</small></button><button class="feature-card pink" data-page="shorts"><span>🎬</span><strong>Shorts</strong><small>Videos, photos & music</small></button></div><div class="coming-card"><div class="coming-icon">📺</div><div><strong>Stafford Sisters TV</strong><p>Shows, movies, favorites and more are coming soon!</p></div></div></section>
+<section class="page active" id="home"><div class="hello-card"><div><p class="small">Welcome to your space ✨</p><h2 id="home-greeting">Hi, Sisters!</h2><p>Make something, share something, cook something, or just have fun together.</p></div><div class="sparkles">✨💕✨</div></div><button id="home-open-notifications" type="button" style="width:100%;padding:13px;margin:12px 0;border:1px solid #eee5ed;border-radius:14px;background:#fff0f6;text-align:left;font-weight:800">🔔 Notifications & settings <span id="home-notification-count"></span> ›</button><div id="home-push-invite" class="push-invite" hidden>
+ <div class="push-invite-icon" aria-hidden="true">🔔</div>
+ <div class="push-invite-copy">
+  <strong>Turn on Stafford Sisters notifications!</strong>
+  <p>Get phone alerts for new Shorts, The Loop, Kitchen and Teacher Corner. 💕</p>
+  <div class="push-invite-actions">
+   <button id="home-push-invite-enable" type="button">Turn on phone alerts</button>
+   <button id="home-push-invite-read" type="button">Got it</button>
+  </div>
+ </div>
+</div>
+<h3 class="section-title">What do you want to do?</h3><div class="feature-grid"><button class="feature-card pink" data-page="sisters"><span class="bell-wrap">🔔<i class="loop-dot"></i></span><strong>The Loop</strong><small>Posts, pictures & family</small></button><button class="feature-card peach" data-page="kitchen"><span>🍳</span><strong>Kitchen</strong><small>Recipes & cooking fun</small></button><button class="feature-card purple" data-page="create"><span>🎨</span><strong>Create</strong><small>Ideas, crafts & projects</small></button><button class="feature-card blue" data-page="teacher"><span>📚</span><strong>Teacher Corner</strong><small>Resources & school ideas</small></button><button class="feature-card pink" data-page="shorts"><span>🎬</span><strong>Shorts</strong><small>Videos, photos & music</small></button></div><div class="coming-card"><div class="coming-icon">📺</div><div><strong>Stafford Sisters TV</strong><p>Shows, movies, favorites and more are coming soon!</p></div></div></section>
 <section class="page" id="sisters"><div class="page-heading"><div><p class="small">OUR FAMILY SPACE</p><h2>The Loop 🔔</h2></div><button class="round-btn" data-page="create">＋</button></div><button id="open-notifications" type="button" style="width:100%;border:1px solid #eee5ed;border-radius:15px;background:white;padding:12px;margin:4px 0 14px;text-align:left;font-weight:800">🔔 Notifications <span id="notification-count"></span> ›</button><div id="family-stories" class="story-row"></div><div id="loop-loading" class="empty-card"><strong>Loading The Loop…</strong></div><div id="loop-feed"></div></section>
 <section class="page" id="shorts" aria-label="Stafford Sisters Shorts">
 <div class="shorts-reel-header">
