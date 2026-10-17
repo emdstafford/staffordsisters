@@ -3,6 +3,7 @@
   "type": "module",
   "dependencies": {
     "web-push": "^3.6.7",
-    "@supabase/supabase-js": "^2.57.0"
+    "@supabase/supabase-js": "^2.57.0",
+    "ffmpeg-static": "^5.2.0"
   }
 }
