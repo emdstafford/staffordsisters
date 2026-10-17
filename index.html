@@ -623,10 +623,54 @@ $('#notification-preferences').onchange=async e=>{
 };
 $('#home-open-notifications').onclick=()=>{showPage('notifications');renderNotificationPrefs();loadNotifications()};
 let notificationItems=[],useServerNotifications=false;
-const isNotificationRead=x=>useServerNotifications?!!x.read:notificationSeen().has(x.id);
+const isNotificationRead=x=>x.localNotice?!!x.read:useServerNotifications?!!x.read:notificationSeen().has(x.id);
 const unreadNotificationCount=()=>notificationItems.filter(x=>!isNotificationRead(x)).length;
 async function requestPushDispatch(){if(!me)return;try{const {data:{session}}=await supabase.auth.getSession();if(session)await fetch('/api/push-dispatch',{method:'POST',headers:{Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'},body:'{}'})}catch(e){console.info('Background push will retry later')}}
 const notifKey=()=>me?'stafford-loop-notifications-seen-'+me.id:'';
+// One friendly opt-in reminder per family account and phone. It is a local
+// notification because phones cannot receive remote push before opting in.
+const phoneInviteId='stafford-phone-invite-v1';
+const phoneInviteKey=()=>me?'stafford-phone-invite-v1-'+me.id:'';
+function phonePushIsEnabled(){
+ return typeof Notification!=='undefined'&&Notification.permission==='granted'
+  &&!!$('#push-alerts-enabled')?.checked;
+}
+function getPhoneInvite(){
+ if(!me||phonePushIsEnabled())return null;
+ try{
+  let stored=JSON.parse(localStorage.getItem(phoneInviteKey())||'null');
+  if(!stored||typeof stored.created_at!=='string'){
+   stored={created_at:new Date().toISOString(),read_at:null};
+   localStorage.setItem(phoneInviteKey(),JSON.stringify(stored));
+  }
+  if(stored.read_at&&Date.now()-Date.parse(stored.read_at)>=7*86400000)return null;
+  return {id:phoneInviteId,localNotice:true,user:me.id,page:'notifications',post:'',
+   date:stored.created_at,read:!!stored.read_at,
+   message:'Turn on Stafford Sisters notifications! Get alerts for Shorts, The Loop, Teacher Corner and Kitchen. 💕'};
+ }catch{return null}
+}
+function markPhoneInviteRead(){
+ if(!me)return;
+ try{
+  const key=phoneInviteKey();
+  const stored=JSON.parse(localStorage.getItem(key)||'null')||{created_at:new Date().toISOString()};
+  stored.read_at=stored.read_at||new Date().toISOString();
+  localStorage.setItem(key,JSON.stringify(stored));
+ }catch{}
+}
+function withPhoneInvite(items){
+ const notice=getPhoneInvite();return notice?[notice,...items]:items;
+}
+function updatePhoneInviteBanner(){
+ const banner=$('#home-push-invite'),reminder=getPhoneInvite();
+ if(banner)banner.hidden=!reminder||reminder.read;
+}
+function updateNotificationsUI(){
+ const count=unreadNotificationCount();
+ $('#notification-count').textContent=count?'('+count+' new)':'';
+ if($('#home-notification-count'))$('#home-notification-count').textContent=count?'('+count+' new)':'';
+ setDot(count>0);syncHomeBadge(count);updatePhoneInviteBanner();renderNotifications();
+}
 function notificationSeen(){try{return new Set(JSON.parse(localStorage.getItem(notifKey())||'[]'))}catch{return new Set()}}
 function saveNotificationSeen(ids){try{localStorage.setItem(notifKey(),JSON.stringify([...ids].slice(-1000)))}catch{}}
 async function loadNotifications(){
@@ -635,16 +679,18 @@ async function loadNotifications(){
   .select('id,actor_id,recipient_id,item_id,category,message,created_at,read_at').eq('recipient_id',me.id).order('created_at',{ascending:false}).limit(150);
  if(!remoteError){
   useServerNotifications=true;
-  notificationItems=(remote||[]).filter(n=>!n.read_at||Date.now()-new Date(n.created_at).getTime()<7*86400000)
-   .map(n=>({id:n.id,post:n.item_id,user:n.actor_id,date:n.created_at,message:n.message,page:n.category==='loop'||n.category==='projects'?'sisters':n.category,read:!!n.read_at}));
-  const count=unreadNotificationCount();
-  $('#notification-count').textContent=count?'('+count+' new)':'';
-  if($('#home-notification-count'))$('#home-notification-count').textContent=count?'('+count+' new)':'';
-  setDot(count>0);syncHomeBadge(count);renderNotifications();return;
+  notificationItems=withPhoneInvite((remote||[]).filter(n=>!n.read_at||Date.now()-new Date(n.created_at).getTime()<7*86400000)
+   .map(n=>({id:n.id,post:n.item_id,user:n.actor_id,date:n.created_at,message:n.message,page:n.category==='loop'||n.category==='projects'?'sisters':n.category,read:!!n.read_at})));
+  updateNotificationsUI();return;
  }
  useServerNotifications=false;
  const {data,error}=await supabase.from('loop_posts').select('id,user_id,body,created_at,loop_comments(id,user_id,body,created_at),loop_reactions(id,user_id,reaction)').order('created_at',{ascending:false}).limit(150);
- if(error){$('#notification-list').textContent='Could not load notifications. Please try again.';return}
+ if(error){
+  notificationItems=withPhoneInvite([]);
+  updateNotificationsUI();
+  if(!notificationItems.length)$('#notification-list').textContent='Could not load notifications. Please try again.';
+  return;
+ }
  const items=[],prefs=notificationPrefs();
  const [kr,tr]=await Promise.all([
   prefs.kitchen?supabase.from('kitchen_recipes').select('id,user_id,title,created_at,kitchen_comments(id,user_id,body,created_at)').order('created_at',{ascending:false}).limit(100):Promise.resolve({data:[]}),
@@ -663,20 +709,32 @@ async function loadNotifications(){
   for(const c of p.loop_comments||[])if(prefs.loop&&c.user_id!==me.id&&(p.user_id===me.id||(p.loop_comments||[]).some(x=>x.user_id===me.id)))items.push({page:'sisters',id:'comment:'+c.id,post:p.id,user:c.user_id,date:c.created_at,message:'commented on a post you follow'});
   for(const x of p.loop_reactions||[])if(prefs.loop&&x.user_id!==me.id&&p.user_id===me.id)items.push({page:'sisters',id:'reaction:'+x.id,post:p.id,user:x.user_id,date:x.created_at||p.created_at,message:x.reaction==='like'?'liked your post':'reacted to your post ❤️'});
  }
- notificationItems=items.sort((a,b)=>new Date(b.date)-new Date(a.date)).filter(x=>!notificationSeen().has(x.id)||Date.now()-new Date(x.date).getTime()<7*86400000).slice(0,100);
- const seen=notificationSeen(),count=notificationItems.filter(x=>!seen.has(x.id)).length;
- $('#notification-count').textContent=count?'('+count+' new)':'';if($('#home-notification-count'))$('#home-notification-count').textContent=count?'('+count+' new)':'';
- setDot(count>0);
- syncHomeBadge(count);
- renderNotifications();
+ notificationItems=withPhoneInvite(items.sort((a,b)=>new Date(b.date)-new Date(a.date))
+  .filter(x=>!notificationSeen().has(x.id)||Date.now()-new Date(x.date).getTime()<7*86400000).slice(0,100));
+ updateNotificationsUI();
 }
 function renderNotifications(){
- const list=$('#notification-list'),seen=notificationSeen();
- list.innerHTML=notificationItems.length?notificationItems.map(x=>'<button type="button" class="notification-item" data-notification-id="'+esc(x.id)+'" data-post-id="'+esc(x.post)+'" data-page="'+esc(x.page||'sisters')+'" style="display:block;width:100%;padding:15px;text-align:left;background:'+(isNotificationRead(x)?'#fff':'#fff0f6')+';border:1px solid #eee5ed;border-radius:16px;margin:8px 0"><strong>'+esc(profileFor(x.user).display_name)+'</strong> '+esc(x.message)+'<small style="display:block;color:#786d80;margin-top:5px">'+new Date(x.date).toLocaleString()+'</small>'+(isNotificationRead(x)?'<span style="display:block;margin-top:8px;color:#776b78">✓ Read</span>':'<span role="button" tabindex="0" data-mark-read="'+esc(x.id)+'" style="display:inline-block;margin-top:8px;padding:7px 11px;border-radius:10px;background:#f6dce9;color:#74334d;font-weight:700">✓ Mark as read</span>')+'</button>').join(''):'<div class="empty-card">No notifications yet 💕</div>';
+ const list=$('#notification-list');
+ list.innerHTML=notificationItems.length?notificationItems.map(x=>{
+  if(x.localNotice){
+   return '<div class="notification-optin-card" data-notification-id="'+phoneInviteId+'">'+
+    '<h3>🔔 Turn on Stafford Sisters notifications!</h3>'+
+    '<p>Get phone alerts for new Shorts, The Loop, Teacher Corner and Kitchen. 💕</p>'+
+    (x.read?'<small>✓ Read</small>':
+     '<div class="notification-optin-actions">'+
+      '<button type="button" data-enable-phone-push>🔔 Turn on phone alerts</button>'+
+      '<button type="button" data-mark-read="'+phoneInviteId+'">✓ Mark as read</button>'+
+     '</div>')+
+    '<small id="phone-invite-feedback">Phone permission is optional. Tap the button to get started.</small>'+
+   '</div>';
+  }
+  return '<button type="button" class="notification-item" data-notification-id="'+esc(x.id)+'" data-post-id="'+esc(x.post)+'" data-page="'+esc(x.page||'sisters')+'" style="display:block;width:100%;padding:15px;text-align:left;background:'+(isNotificationRead(x)?'#fff':'#fff0f6')+';border:1px solid #eee5ed;border-radius:16px;margin:8px 0"><strong>'+esc(profileFor(x.user).display_name)+'</strong> '+esc(x.message)+'<small style="display:block;color:#786d80;margin-top:5px">'+new Date(x.date).toLocaleString()+'</small>'+(isNotificationRead(x)?'<span style="display:block;margin-top:8px;color:#776b78">✓ Read</span>':'<span role="button" tabindex="0" data-mark-read="'+esc(x.id)+'" style="display:inline-block;margin-top:8px;padding:7px 11px;border-radius:10px;background:#f6dce9;color:#74334d;font-weight:700">✓ Mark as read</span>')+'</button>';
+ }).join(''):'<div class="empty-card">No notifications yet 💕</div>';
 }
 $('#open-notifications').onclick=async()=>{showPage('notifications');renderNotificationPrefs();await loadNotifications()};
 $('#notifications-back').onclick=()=>showPage('sisters');
 async function markOneNotification(id){
+ if(id===phoneInviteId){markPhoneInviteRead();return true}
  if(useServerNotifications){
   const {error}=await supabase.from('family_notifications').update({read_at:new Date().toISOString()}).eq('id',id).eq('recipient_id',me.id);
   if(error){alert('Could not mark this notification as read. Please retry.');return false}
@@ -695,13 +753,17 @@ $('#notifications-mark-all').onclick=async()=>{
   }else{
    const seen=notificationSeen();notificationItems.forEach(x=>seen.add(x.id));saveNotificationSeen(seen);
   }
+  markPhoneInviteRead();
   await loadNotifications();
  }catch(e){alert('Could not mark all as read. Please try again.')}finally{button.disabled=false}
 };
 $('#notification-list').onclick=async e=>{
+ const enable=e.target.closest('[data-enable-phone-push]');
+ if(enable){await enablePhonePushFromInvite();return}
  const mark=e.target.closest('[data-mark-read]');
  if(mark){if(await markOneNotification(mark.dataset.markRead))await loadNotifications();return}
  const b=e.target.closest('[data-notification-id]');if(!b)return;
+ if(b.dataset.notificationId===phoneInviteId)return;
  if(!(await markOneNotification(b.dataset.notificationId)))return;
  const destination=b.dataset.page==='kitchen'?'kitchen':b.dataset.page==='teacher'?'teacher':b.dataset.page==='shorts'?'shorts':'sisters';
  showPage(destination);
@@ -791,7 +853,32 @@ $('#push-send-test').onclick=async()=>{
  }catch(e){status.textContent=e?.message||'Test notification failed.'}
  finally{button.disabled=false;button.textContent='🔔 Send a test notification'}
 };
-$('#push-alerts-enabled').addEventListener('change',e=>pushPreference(e.target.checked));
+$('#push-alerts-enabled').addEventListener('change',async e=>{
+ await pushPreference(e.target.checked);
+ if(phonePushIsEnabled())markPhoneInviteRead();
+ if(me)loadNotifications();
+});
+async function enablePhonePushFromInvite(){
+ // This runs directly on the person's button tap, as iPhone requires.
+ const toggle=$('#push-alerts-enabled');
+ toggle.checked=true;
+ await pushPreference(true);
+ if(phonePushIsEnabled()){
+  markPhoneInviteRead();
+  await loadNotifications();
+ }else{
+  const feedback=$('#phone-invite-feedback');
+  if(feedback)feedback.textContent=$('#push-alerts-status').textContent||'Phone alerts are not enabled yet.';
+  updatePhoneInviteBanner();
+ }
+}
+$('#home-push-invite-enable').onclick=()=>{
+ showPage('notifications');
+ enablePhonePushFromInvite();
+};
+$('#home-push-invite-read').onclick=async()=>{
+ markPhoneInviteRead();await loadNotifications();
+};
 
 shortsApp=initShorts({
  supabase,getMe:()=>me,profileFor,avatarMarkup,signedUrl,esc,ago,showPage,openProfile,pushDispatch:requestPushDispatch
