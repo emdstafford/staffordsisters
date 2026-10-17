@@ -189,7 +189,7 @@ export function initShorts({supabase,getMe,profileFor,avatarMarkup,esc,ago,openP
      (p.caption?
       '<div class="shorts-caption-preview">'+
        '<p class="shorts-reel-caption shorts-caption-clamp">'+esc(p.caption)+'</p>'+
-       '<button type="button" class="shorts-caption-more" data-short-caption-more aria-label="Read full caption"'+(p.caption.length>75||/\\n/.test(p.caption)?'':' hidden')+'>… more</button>'+
+       '<button type="button" class="shorts-caption-more" data-short-caption-more aria-label="Read full caption"'+(p.caption.length>75||/\n/.test(p.caption)?'':' hidden')+'>… more</button>'+
       '</div>':'')+
      (SHORTS_TRACKS[p.music_track]&&p.music_track!=='none'?
        (p.media_type==='video'&&p.media?.[0]?.path?.endsWith('-mix.mp4')?
