@@ -53,9 +53,9 @@ export default async function handler(req,res){
   try{
    await exec(ffmpegPath,['-hide_banner','-i',inputPath],{timeout:9000,maxBuffer:500000});
   }catch(e){diagnostic=String(e?.stderr||'')}
-  const videoStream=/Stream #\d+:\d+(?:\([^)]+\))?: Video:/i.test(diagnostic);
-  const audioStream=/Stream #\d+:\d+(?:\([^)]+\))?: Audio:/i.test(diagnostic);
-  const h264=/Stream #\d+:\d+(?:\([^)]+\))?: Video: h264/i.test(diagnostic);
+  const videoStream=/Stream #\d+:\d+[^\n]* Video:/i.test(diagnostic);
+  const audioStream=/Stream #\d+:\d+[^\n]* Audio:/i.test(diagnostic);
+  const h264=/Stream #\d+:\d+[^\n]* Video: h264/i.test(diagnostic);
   if(!videoStream)return fail(res,400,'That file is not a video Stafford Sisters can process.');
   const duration=diagnostic.match(/Duration:\s*(\d+):(\d+):(\d+(?:\.\d+)?)/);
   if(duration&&Number(duration[1])*3600+Number(duration[2])*60+Number(duration[3])>60.5){
@@ -78,12 +78,12 @@ export default async function handler(req,res){
    '-c:a','aac','-b:a','128k',
    ...(h264&&input.length<39*1024*1024?['-c:v','copy']:
     ['-c:v','libx264','-preset','veryfast','-crf','26',
-     '-vf','scale=720:1280:force_original_aspect_ratio=decrease,format=yuv420p']),
+     '-vf','scale=720:1280:force_original_aspect_ratio=decrease:force_divisible_by=2,format=yuv420p']),
    '-movflags','+faststart','-max_muxing_queue_size','1024',
    outputPath
   ];
   try{
-   await exec(ffmpegPath,args,{timeout:170000,maxBuffer:1500000});
+   await exec(ffmpegPath,args,{timeout:55000,maxBuffer:1500000});
   }catch(e){
    console.error('Shorts music conversion failed',String(e?.stderr||e?.message||'').slice(0,500));
    return fail(res,422,'This video could not have music added automatically. Your original video is safe; try a shorter MP4.');
@@ -92,7 +92,7 @@ export default async function handler(req,res){
   if(stats.size<1000||stats.size>MAX_BYTES)
    return fail(res,422,'The music video was too large to upload. Try a shorter video.');
 
-  const newPath=user.id+'/short-'+randomUUID()+'.mp4';
+  const newPath=user.id+'/short-'+randomUUID()+'-mix.mp4';
   const finished=await readFile(outputPath);
   const {error:uploadError}=await db.storage.from(BUCKET).upload(newPath,finished,{
    contentType:'video/mp4',cacheControl:'3600',upsert:false
