@@ -4,6 +4,8 @@ export function initShorts({supabase,getMe,profileFor,avatarMarkup,esc,ago,openP
  const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
  const feed=$('#shorts-feed'),form=$('#shorts-form'),input=$('#shorts-file'),status=$('#shorts-status');
  const details=$('#shorts-create-details'),modal=$('#shorts-comments-modal');
+ const captionModal=$('#shorts-caption-modal');
+ let captionReturnFocus=null,captionPausedVideo=null;
  let selectedFiles=[],previewUrls=[],items=[],busy=false,observer=null,activeId=null;
  const sound=createShortsMusicPlayer({onStop:()=>restoreMusicLabels()});
  const isVideo=f=>/^video\//.test(f.type)||/\.(mov|mp4|webm)$/i.test(f.name);
@@ -184,7 +186,11 @@ export function initShorts({supabase,getMe,profileFor,avatarMarkup,esc,ago,openP
      '<div class="shorts-user-row"><button type="button" class="shorts-avatar" data-short-profile="'+esc(p.user_id)+'" aria-label="View '+esc(author.display_name)+' profile">'+avatarMarkup(author)+'</button>'+
       '<button type="button" class="shorts-username" data-short-profile="'+esc(p.user_id)+'">'+esc(author.display_name)+'</button>'+
       '<small>'+esc(ago(p.created_at))+'</small></div>'+
-     (p.caption?'<p class="shorts-reel-caption">'+esc(p.caption)+'</p>':'')+
+     (p.caption?
+      '<div class="shorts-caption-preview">'+
+       '<p class="shorts-reel-caption shorts-caption-clamp">'+esc(p.caption)+'</p>'+
+       '<button type="button" class="shorts-caption-more" data-short-caption-more aria-label="Read full caption"'+(p.caption.length>75||/\\n/.test(p.caption)?'':' hidden')+'>… more</button>'+
+      '</div>':'')+
      (SHORTS_TRACKS[p.music_track]&&p.music_track!=='none'?
        (p.media_type==='video'&&p.media?.[0]?.path?.endsWith('-mix.mp4')?
         '<span class="shorts-music-embedded" aria-label="Soundtrack permanently included in video">🎵 '+esc(SHORTS_TRACKS[p.music_track].name)+' · in video</span>':
@@ -202,7 +208,18 @@ export function initShorts({supabase,getMe,profileFor,avatarMarkup,esc,ago,openP
     '</article>';
   }).join('');
   initObserver();
+  requestAnimationFrame(refreshCaptionButtons);
  }
+ function refreshCaptionButtons(){
+  $('.shorts-caption-preview').forEach(group=>{
+   const caption=group.querySelector('.shorts-reel-caption');
+   const button=group.querySelector('.shorts-caption-more');
+   if(!caption||!button)return;
+   const fullText=caption.textContent||'';
+   button.hidden=!(fullText.length>75||fullText.includes('\n')||caption.scrollHeight>caption.clientHeight+2);
+  });
+ }
+ window.addEventListener('resize',refreshCaptionButtons);
  function initObserver(){
   observer?.disconnect();
   observer=new IntersectionObserver(entries=>{
@@ -252,6 +269,33 @@ export function initShorts({supabase,getMe,profileFor,avatarMarkup,esc,ago,openP
   modal.hidden=false;$('#shorts-comment-input').focus();
  }
  function closeComments(){modal.hidden=true}
+ function openFullCaption(post,trigger){
+  if(!post?.caption)return;
+  captionReturnFocus=trigger;
+  $('#shorts-caption-title').textContent='💕 Full caption';
+  $('#shorts-caption-author').textContent=profileFor(post.user_id).display_name+' · '+ago(post.created_at);
+  $('#shorts-caption-full').textContent=post.caption;
+  $('#shorts-caption-full').scrollTop=0;
+  const card=trigger.closest('.shorts-reel');
+  const video=card?.querySelector('video');
+  captionPausedVideo=video&&!video.paused?video:null;
+  captionPausedVideo?.pause();
+  stopMusic();
+  captionModal.hidden=false;
+  $('#shorts-caption-close').focus();
+ }
+ function closeFullCaption(){
+  if(captionModal.hidden)return;
+  captionModal.hidden=true;
+  const video=captionPausedVideo;
+  captionPausedVideo=null;
+  if(video?.isConnected&&document.querySelector('#shorts.page.active'))video.play().catch(()=>{});
+  if(captionReturnFocus?.isConnected)captionReturnFocus.focus();
+  captionReturnFocus=null;
+ }
+ $('#shorts-caption-close').onclick=closeFullCaption;
+ captionModal.addEventListener('click',e=>{if(e.target===captionModal)closeFullCaption()});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!captionModal.hidden)closeFullCaption()});
  $('#shorts-comments-close').onclick=closeComments;
  modal.addEventListener('click',e=>{if(e.target===modal)closeComments()});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!modal.hidden)closeComments()});
@@ -281,6 +325,8 @@ export function initShorts({supabase,getMe,profileFor,avatarMarkup,esc,ago,openP
   if(!card)return;
   const id=card.dataset.short,post=items.find(x=>x.id===id);
   if(!post)return;
+  const expand=e.target.closest('[data-short-caption-more]');
+  if(expand){openFullCaption(post,expand);return}
   const button=e.target.closest('[data-short-react]');
   if(button){
    button.disabled=true;
