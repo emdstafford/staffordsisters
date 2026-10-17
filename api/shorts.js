@@ -9,7 +9,7 @@ const allowed=new Map([
  ['mp4','video/mp4'],['mov','video/quicktime'],['webm','video/webm']
 ]);
 const musicChoices=new Set(['none','sunshine','starlight','cozy','sparkle','dance','adventure','chill','funky']);
-const PATH_RX=/^[0-9a-f-]{36}\/short-[0-9a-f-]{36}\.(jpg|jpeg|png|webp|heic|heif|mp4|mov|webm)$/i;
+const PATH_RX=/^[0-9a-f-]{36}\/short-[0-9a-f-]{36}(?:-mix)?\.(jpg|jpeg|png|webp|heic|heif|mp4|mov|webm)$/i;
 const fail=(res,code,message)=>res.status(code).json({error:message});
 const arrayOfPaths=raw=>{
  if(!raw||typeof raw!=='string')return [];
