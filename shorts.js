@@ -1,15 +1,11 @@
 // Stafford Sisters Shorts: private full-screen, swipe-up family videos and photo galleries.
+import {SHORTS_TRACKS,createShortsMusicPlayer} from './shorts-music.js';
 export function initShorts({supabase,getMe,profileFor,avatarMarkup,esc,ago,openProfile,pushDispatch=()=>{}}){
  const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
  const feed=$('#shorts-feed'),form=$('#shorts-form'),input=$('#shorts-file'),status=$('#shorts-status');
  const details=$('#shorts-create-details'),modal=$('#shorts-comments-modal');
- let selectedFiles=[],previewUrls=[],items=[],busy=false,music=null,observer=null,activeId=null;
- const tunes={
-  sunshine:{base:261.63,notes:[0,4,7,9,7,4,2,4,5,9,7,4,2,0],speed:290},
-  starlight:{base:220,notes:[0,7,9,7,4,2,0,-3,0,4,7,4],speed:390},
-  cozy:{base:196,notes:[0,2,4,7,4,2,0,-3,0,2,5,2],speed:350}
- };
- const songNames={sunshine:'Sunshine',starlight:'Starlight',cozy:'Cozy'};
+ let selectedFiles=[],previewUrls=[],items=[],busy=false,observer=null,activeId=null;
+ const sound=createShortsMusicPlayer({onStop:()=>restoreMusicLabels()});
  const isVideo=f=>/^video\//.test(f.type)||/\.(mov|mp4|webm)$/i.test(f.name);
  const supported=f=>/^(image\/(jpeg|png|webp|heic|heif)|video\/(mp4|quicktime|webm))$/.test(f.type)||/\.(jpg|jpeg|png|webp|heic|heif|mp4|mov|webm)$/i.test(f.name);
  function showStatus(message,isError=false){
@@ -85,31 +81,29 @@ export function initShorts({supabase,getMe,profileFor,avatarMarkup,esc,ago,openP
   $('#shorts-file-name').textContent=files.length===1?files[0].name:files.length+' pictures selected';
   showStatus(files.length===1?'Ready to post! 💕':'Your photo slideshow is ready! 💕');
  };
- function stopMusic(){
-  if(music){clearInterval(music.timer);music.ctx.close().catch(()=>{});music=null}
+ function restoreMusicLabels(){
   $$('.shorts-music-toggle,#shorts-preview-music').forEach(b=>{
-   b.textContent=b.id==='shorts-preview-music'?'♫ Preview music':'♫ '+(songNames[b.dataset.track]||'Music');
+   if(b.id==='shorts-preview-music')b.textContent='▶ Preview soundtrack';
+   else{
+    const tune=SHORTS_TRACKS[b.dataset.track];
+    b.textContent='▶ '+(tune?.emoji||'♫')+' '+(tune?.name||'Music');
+   }
   });
  }
- function playMusic(track,button){
-  if(!tunes[track])return;
-  if(music?.button===button){stopMusic();return}
-  stopMusic();
-  const Audio=window.AudioContext||window.webkitAudioContext;
-  if(!Audio){showStatus('This phone cannot play the soundtrack.',true);return}
-  const ctx=new Audio();ctx.resume().catch(()=>{});
-  const tune=tunes[track];let n=0;
-  const play=()=>{
-   if(ctx.state==='closed')return;
-   const osc=ctx.createOscillator(),gain=ctx.createGain(),now=ctx.currentTime;
-   osc.type='sine';osc.frequency.value=tune.base*Math.pow(2,tune.notes[n++%tune.notes.length]/12);
-   gain.gain.setValueAtTime(.0001,now);
-   gain.gain.exponentialRampToValueAtTime(.032,now+.02);
-   gain.gain.exponentialRampToValueAtTime(.0001,now+.25);
-   osc.connect(gain);gain.connect(ctx.destination);osc.start(now);osc.stop(now+.26);
-  };
-  play();music={button,ctx,timer:setInterval(play,tune.speed)};
-  button.textContent='♫ Pause music';
+ function stopMusic(){sound.stop();restoreMusicLabels()}
+ async function playMusic(track,button){
+  if(!SHORTS_TRACKS[track]||track==='none')return;
+  if(sound.isPlaying(track)){stopMusic();return}
+  try{
+   await sound.start(track);
+   if(sound.isPlaying(track)){
+    restoreMusicLabels();
+    button.textContent='❚❚ Pause '+SHORTS_TRACKS[track].name;
+   }
+  }catch(err){
+   stopMusic();
+   showToast(err?.message||'Music could not start. Turn up your volume and try again.');
+  }
  }
  $('#shorts-preview-music').onclick=e=>{
   const track=$('#shorts-track').value;
@@ -179,7 +173,7 @@ export function initShorts({supabase,getMe,profileFor,avatarMarkup,esc,ago,openP
       '<button type="button" class="shorts-username" data-short-profile="'+esc(p.user_id)+'">'+esc(author.display_name)+'</button>'+
       '<small>'+esc(ago(p.created_at))+'</small></div>'+
      (p.caption?'<p class="shorts-reel-caption">'+esc(p.caption)+'</p>':'')+
-     (songNames[p.music_track]?'<button type="button" class="shorts-music-toggle" data-track="'+esc(p.music_track)+'">♫ '+esc(songNames[p.music_track])+'</button>':'')+
+     (SHORTS_TRACKS[p.music_track]&&p.music_track!=='none'?'<button type="button" class="shorts-music-toggle" data-track="'+esc(p.music_track)+'" aria-label="Play '+esc(SHORTS_TRACKS[p.music_track].name)+' soundtrack">▶ '+esc(SHORTS_TRACKS[p.music_track].emoji)+' '+esc(SHORTS_TRACKS[p.music_track].name)+'</button>':'')+
     '</div>'+
     '<div class="shorts-overlay-side">'+
      '<button type="button" class="shorts-side-button'+(mine?.reaction==='like'?' is-selected':'')+'" data-short-react="like" aria-label="Like Short"><span>👍</span><small>'+likes+'</small></button>'+
